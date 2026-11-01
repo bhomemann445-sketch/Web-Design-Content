@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home & Living Deals | DealScout</title>
+    <!-- Prevent Dark Mode White Flash on Page Load -->
+    <script>
+        document.documentElement.setAttribute('data-bs-theme', localStorage.getItem('dealScoutTheme') || 'light');
+    </script>
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-dealscout sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand fs-3" href="index.html">
+                <i class="bi bi-tag-fill me-2 text-warning"></i>Deal<span>Scout</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto gap-1">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="fashion.html">Fashion</a></li>
+                    <li class="nav-item"><a class="nav-link" href="electronics.html">Electronics</a></li>
+                    <li class="nav-item"><a class="nav-link" href="beauty.html">Beauty</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="home-living.html">Home & Living</a></li>
+                </ul>
+                <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                    <!-- Light / Dark Mode Toggle Button -->
+                    <button class="btn btn-theme-toggle" id="themeToggleBtn" type="button" title="Switch Theme">
+                        <i class="bi bi-moon-stars-fill me-1"></i><span>Dark</span>
+                    </button>
+                    <!-- Savings Tracker Drawer Button -->
+                    <button class="btn btn-accent position-relative" data-bs-toggle="offcanvas" data-bs-target="#savingsDrawer">
+                        <i class="bi bi-calculator me-1"></i> Savings Tracker
+                        <span id="savedCountBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home & Living Category Header Banner -->
+    <header class="container my-4">
+        <div class="hero-banner shadow-sm py-4 px-4">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <div class="d-inline-flex align-items-center gap-2 bg-white bg-opacity-10 px-3 py-1 rounded-pill mb-2">
+                        <i class="bi bi-house-heart-fill text-warning"></i>
+                        <span class="small fw-semibold">HOME & LIVING PROMOTIONS</span>
+                    </div>
+                    <h1 class="display-6 fw-bold mb-2">Home & Living Discounts</h1>
+                    <p class="mb-0 opacity-75">
+                        Upgrade your living space with verified store deals and exact Yangon showroom locations on Furniture, Decor, Bedding, Kitchenware, and Cleaning Essentials.
+                    </p>
+                </div>
+                <div class="col-lg-5">
+                    <div class="row g-2">
+                        <div class="col-sm-7">
+                            <div class="input-group">
+                                <span class="input-group-text border-0"><i class="bi bi-search text-muted"></i></span>
+                                <input type="text" id="searchInput" class="form-control border-0 py-2" placeholder="Search home item, store, or township...">
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <select id="sortSelect" class="form-select border-0 py-2">
+                                <option value="default">Sort: Featured</option>
+                                <option value="discount-desc">Highest Discount %</option>
+                                <option value="ending-soon">Ending Soonest</option>
+                                <option value="price-asc">Price: Low to High</option>
+                                <option value="price-desc">Price: High to Low</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sub-Category Filter Pills & Product Grid -->
+    <main class="container my-5">
+        <!-- Sub-Category Filter Bar -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3 filter-bar-box p-3 rounded-4 shadow-sm">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-funnel-fill text-primary fs-5"></i>
+                <span class="fw-bold">Sub-Categories:</span>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="filter-btn active" data-filter="all">All Home (8)</button>
+                <button class="filter-btn" data-filter="furniture"><i class="bi bi-lamp me-1"></i>Furniture</button>
+                <button class="filter-btn" data-filter="decor"><i class="bi bi-lightbulb me-1"></i>Decor</button>
+                <button class="filter-btn" data-filter="bedding"><i class="bi bi-moon-stars me-1"></i>Bedding</button>
+                <button class="filter-btn" data-filter="kitchenware"><i class="bi bi-cup-hot me-1"></i>Kitchenware</button>
+                <button class="filter-btn" data-filter="cleaning"><i class="bi bi-bucket me-1"></i>Cleaning</button>
+            </div>
+        </div>
+
+        <!-- Deals Grid -->
+        <div class="row g-4" id="dealsContainer">
+
+            <!-- 1. Furniture Item 1 -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="furniture" data-keywords="furniture armchair chair nordic thaketa" data-title="Minimalist Nordic Accent Armchair" data-store="Sweety Home Living Mall" data-location="No. 296/A-12, Ayeyar Wun Road, Thaketa, Yangon" data-price="180000" data-discount="25">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=700&q=80" alt="Minimalist Nordic Accent Armchair">
+                        <span class="badge-discount">-25% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-05T23:59:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Sweety Home Living Mall</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Furniture</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 296/A-12, Ayeyar Wun Road, Thaketa, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Minimalist Nordic Accent Armchair</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 5, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">180,000 MMK</span>
+                                <span class="price-old">240,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 60,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Minimalist Nordic Accent Armchair', 'Sweety Home Living Mall (No. 296/A-12)', 240000, 180000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Furniture Item 2 -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="furniture" data-keywords="furniture chair office desk lanmadaw" data-title="Ergonomic Swivel Office Desk Chair" data-store="Crown Furniture" data-location="No. 195, Anawrahta Rd, Corner of 13th St, Lanmadaw, Yangon" data-price="130000" data-discount="35">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1580480055273-228ff5388ef8?auto=format&fit=crop&w=700&q=80" alt="Ergonomic Swivel Office Desk Chair">
+                        <span class="badge-discount">-35% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T20:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Crown Furniture</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Furniture</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 195, Anawrahta Rd, Corner of 13th St, Lanmadaw, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Ergonomic Swivel Office Desk Chair</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">130,000 MMK</span>
+                                <span class="price-old">200,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 70,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Ergonomic Swivel Office Desk Chair', 'Crown Furniture (No. 195)', 200000, 130000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Decor Item -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="decor" data-keywords="decor lamp light pendant mingalar taung nyunt" data-title="Modern Warm LED Dining Pendant Lamp" data-store="PRO 1 Global Home Center" data-location="No. 5, Upper Pazundaung Rd, Mingalar Taung Nyunt, Yangon" data-price="45000" data-discount="30">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=700&q=80" alt="Modern Warm LED Dining Pendant Lamp">
+                        <span class="badge-discount">-30% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T18:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>PRO 1 Global Home Center</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Decor</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 5, Upper Pazundaung Rd, Mingalar Taung Nyunt, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Modern Warm LED Dining Pendant Lamp</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">45,000 MMK</span>
+                                <span class="price-old">65,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 20,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Modern Warm LED Dining Pendant Lamp', 'PRO 1 Global Home Center (No. 5)', 65000, 45000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Bedding Item -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="bedding" data-keywords="bedding bedsheet cotton pillow tamwe" data-title="Luxury 1000-Thread Cotton Bedsheet Set" data-store="Sweety Home – Kyaik Ka San" data-location="No. 2A1/16G, East Race Course Road, Tamwe, Yangon" data-price="55000" data-discount="40">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=700&q=80" alt="Luxury 1000-Thread Cotton Bedsheet Set">
+                        <span class="badge-discount">-40% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T22:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Sweety Home – Kyaik Ka San</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Bedding</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 2A1/16G, East Race Course Road, Tamwe, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Luxury 1000-Thread Cotton Bedsheet Set</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">55,000 MMK</span>
+                                <span class="price-old">92,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 37,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Luxury 1000-Thread Cotton Bedsheet Set', 'Sweety Home – Kyaik Ka San (No. 2A1/16G)', 92000, 55000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Kitchenware Item 1: Pro High-Speed Kitchen Blender -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="kitchenware" data-keywords="kitchenware kitchen blender appliance myanmar plaza bahan" data-title="Pro High-Speed Kitchen Blender (1.5L)" data-store="Lock & Lock Official" data-location="Shop 205, 2nd Floor, Myanmar Plaza, Kabar Aye Pagoda Rd, Bahan" data-price="210000" data-discount="20">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1570222094114-d054a817e56b?auto=format&fit=crop&w=700&q=80" alt="Pro High-Speed Kitchen Blender">
+                        <span class="badge-discount">-20% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-05T20:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Lock & Lock Official</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Kitchenware</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Shop 205, 2nd Floor, Myanmar Plaza, Kabar Aye Pagoda Rd, Bahan</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Pro High-Speed Kitchen Blender (1.5L)</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 5, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">210,000 MMK</span>
+                                <span class="price-old">265,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 55,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Pro High-Speed Kitchen Blender (1.5L)', 'Lock & Lock Official (Shop 205)', 265000, 210000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Kitchenware Item 2 (Expired Monochrome Demo Card) -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="kitchenware" data-keywords="kitchenware cookware pan pot lanmadaw" data-title="6-Piece Non-Stick Granite Cookware Set" data-store="Mike Mike Steel" data-location="No. 141, Ground Floor, Lanmadaw Plaza, Lanmadaw, Yangon" data-price="95000" data-discount="30">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=700&q=80" alt="6-Piece Non-Stick Granite Cookware Set">
+                        <span class="badge-discount">-30% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-01T12:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Mike Mike Steel</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Kitchenware</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 141, Ground Floor, Lanmadaw Plaza, Lanmadaw, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">6-Piece Non-Stick Granite Cookware Set</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 1, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">95,000 MMK</span>
+                                <span class="price-old">135,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 40,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('6-Piece Non-Stick Granite Cookware Set', 'Mike Mike Steel (No. 141)', 135000, 95000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. Cleaning Item 1 -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="cleaning" data-keywords="cleaning vacuum robot cleaner tamwe" data-title="Smart Robot Vacuum & Floor Mop Cleaner" data-store="Hako Myanmar" data-location="No. 17, Kyauk Myaung Street, Tamwe, Yangon" data-price="320000" data-discount="25">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=700&q=80" alt="Smart Robot Vacuum & Floor Mop Cleaner">
+                        <span class="badge-discount">-25% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T18:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Hako Myanmar</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Cleaning</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 17, Kyauk Myaung Street, Tamwe, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Smart Robot Vacuum & Floor Mop Cleaner</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">320,000 MMK</span>
+                                <span class="price-old">430,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 110,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Smart Robot Vacuum & Floor Mop Cleaner', 'Hako Myanmar (No. 17)', 430000, 320000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. Cleaning Item 2 (Urgent < 24 Hours Alert Demo) -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="cleaning" data-keywords="cleaning spray mop detergent pabedan" data-title="Eco-Friendly Deep Home Cleaning Kit" data-store="New Generation MST" data-location="No. 72, Shwedagon Pagoda Road, Pabedan, Yangon" data-price="22000" data-discount="45">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?auto=format&fit=crop&w=700&q=80" alt="Eco-Friendly Deep Home Cleaning Kit">
+                        <span class="badge-discount">-45% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-02T17:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>New Generation MST</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Cleaning</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 72, Shwedagon Pagoda Road, Pabedan, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Eco-Friendly Deep Home Cleaning Kit</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 2, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">22,000 MMK</span>
+                                <span class="price-old">40,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 18,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Eco-Friendly Deep Home Cleaning Kit', 'New Generation MST (No. 72)', 40000, 22000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Smart Savings Calculator Offcanvas Drawer -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="savingsDrawer">
+        <div class="offcanvas-header bg-dark text-white">
+            <h5 class="offcanvas-title fw-bold"><i class="bi bi-calculator me-2 text-warning"></i>Smart Savings Tracker</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column">
+            <div id="savedDealsList" class="flex-grow-1 overflow-auto"></div>
+            <div class="border-top pt-3 mt-3 p-3 rounded-3 empty-state-box">
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="text-muted">Original Store Price:</span>
+                    <span id="totalOriginalPrice" class="text-decoration-line-through text-muted">0 MMK</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="fw-semibold">Discounted Total:</span>
+                    <span id="totalFinalPrice" class="fw-bold fs-5">0 MMK</span>
+                </div>
+                <div class="d-flex justify-content-between p-2 rounded bg-success-subtle text-success fw-bold">
+                    <span>Total Money Saved:</span>
+                    <span id="totalSavedAmount">0 MMK</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <h5 class="fw-bold mb-1">Deal<span class="text-warning">Scout</span></h5>
+            <p class="small text-secondary mb-0">Developed by Group 1 • GUSTO College Web Design Competition 2026</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS & Custom Logic JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fashion Deals | DealScout</title>
+    <!-- Prevent Dark Mode White Flash on Page Load -->
+    <script>
+        document.documentElement.setAttribute('data-bs-theme', localStorage.getItem('dealScoutTheme') || 'light');
+    </script>
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-dealscout sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand fs-3" href="index.html">
+                <i class="bi bi-tag-fill me-2 text-warning"></i>Deal<span>Scout</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto gap-1">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="fashion.html">Fashion</a></li>
+                    <li class="nav-item"><a class="nav-link" href="electronics.html">Electronics</a></li>
+                    <li class="nav-item"><a class="nav-link" href="beauty.html">Beauty</a></li>
+                    <li class="nav-item"><a class="nav-link" href="home-living.html">Home & Living</a></li>
+                </ul>
+                <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                    <!-- Light / Dark Mode Toggle Button -->
+                    <button class="btn btn-theme-toggle" id="themeToggleBtn" type="button" title="Switch Theme">
+                        <i class="bi bi-moon-stars-fill me-1"></i><span>Dark</span>
+                    </button>
+                    <!-- Savings Tracker Drawer Button -->
+                    <button class="btn btn-accent position-relative" data-bs-toggle="offcanvas" data-bs-target="#savingsDrawer">
+                        <i class="bi bi-calculator me-1"></i> Savings Tracker
+                        <span id="savedCountBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Fashion Category Header Banner -->
+    <header class="container my-4">
+        <div class="hero-banner shadow-sm py-4 px-4">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <div class="d-inline-flex align-items-center gap-2 bg-white bg-opacity-10 px-3 py-1 rounded-pill mb-2">
+                        <i class="bi bi-handbag-fill text-warning"></i>
+                        <span class="small fw-semibold">FASHION & APPAREL PROMOTIONS</span>
+                    </div>
+                    <h1 class="display-6 fw-bold mb-2">Fashion Store Discounts</h1>
+                    <p class="mb-0 opacity-75">
+                        Compare limited-time deals and exact Yangon store locations on Clothing, Shoes, Bags, Jewelry, and Sunglasses.
+                    </p>
+                </div>
+                <div class="col-lg-5">
+                    <div class="row g-2">
+                        <div class="col-sm-7">
+                            <div class="input-group">
+                                <span class="input-group-text border-0"><i class="bi bi-search text-muted"></i></span>
+                                <input type="text" id="searchInput" class="form-control border-0 py-2" placeholder="Search brand, item, or township...">
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <select id="sortSelect" class="form-select border-0 py-2">
+                                <option value="default">Sort: Featured</option>
+                                <option value="discount-desc">Highest Discount %</option>
+                                <option value="ending-soon">Ending Soonest</option>
+                                <option value="price-asc">Price: Low to High</option>
+                                <option value="price-desc">Price: High to Low</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sub-Category Filter Pills & Product Grid -->
+    <main class="container my-5">
+        <!-- Sub-Category Filter Bar -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3 filter-bar-box p-3 rounded-4 shadow-sm">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-funnel-fill text-primary fs-5"></i>
+                <span class="fw-bold">Sub-Categories:</span>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="filter-btn active" data-filter="all">All Fashion (8)</button>
+                <button class="filter-btn" data-filter="clothing"><i class="bi bi-person-standing-dress me-1"></i>Clothing</button>
+                <button class="filter-btn" data-filter="shoes"><i class="bi bi-lightning-charge me-1"></i>Shoes</button>
+                <button class="filter-btn" data-filter="bags"><i class="bi bi-handbag me-1"></i>Bags</button>
+                <button class="filter-btn" data-filter="jewelry"><i class="bi bi-gem me-1"></i>Jewelry</button>
+                <button class="filter-btn" data-filter="sunglasses"><i class="bi bi-eyeglasses me-1"></i>Sunglasses</button>
+            </div>
+        </div>
+
+        <!-- Deals Grid -->
+        <div class="row g-4" id="dealsContainer">
+
+            <!-- 1. Clothing Item 1 -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="clothing" data-keywords="clothing shirt cotton bahan" data-title="Cotton Casual Button-Down Shirt" data-store="Fashmob" data-location="Golden Link Condo, Link Street, Bahan, Yangon" data-price="45500" data-discount="35">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=700&q=80" alt="Cotton Casual Button-Down Shirt">
+                        <span class="badge-discount">-35% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T21:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Fashmob</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Clothing</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Golden Link Condo, Link Street, Bahan, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Cotton Casual Button-Down Shirt</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">45,500 MMK</span>
+                                <span class="price-old">70,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 24,500 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Cotton Casual Button-Down Shirt', 'Fashmob (Golden Link Condo)', 70000, 45500)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Clothing Item 2 -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="clothing" data-keywords="clothing jacket denim sanchaung times city" data-title="Classic Fit Denim Jacket" data-store="Wave Wear" data-location="Times City Mall, 2nd Floor A226, Sanchaung, Yangon" data-price="64000" data-discount="20">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1551537482-f2075a1d41f2?auto=format&fit=crop&w=700&q=80" alt="Classic Fit Denim Jacket">
+                        <span class="badge-discount">-20% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-05T22:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Wave Wear</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Clothing</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Times City Mall, 2nd Floor A226, Sanchaung, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Classic Fit Denim Jacket</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 5, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">64,000 MMK</span>
+                                <span class="price-old">80,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 16,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Classic Fit Denim Jacket', 'Wave Wear (Times City Mall)', 80000, 64000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Shoes Item 1 -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="shoes" data-keywords="shoes shoe sneakers nike sanchaung" data-title="Nike Free RN Running Sneakers" data-store="Light-Sneakers Shop" data-location="No.57, Mingalar St & Pannchan St Corner, Sanchaung, Yangon" data-price="140000" data-discount="30">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=80" alt="Nike Free RN Running Sneakers">
+                        <span class="badge-discount">-30% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T20:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Light-Sneakers Shop</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Shoes</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No.57, Mingalar St & Pannchan St Corner, Sanchaung, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Nike Free RN Running Sneakers</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">140,000 MMK</span>
+                                <span class="price-old">200,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 60,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Nike Free RN Running Sneakers', 'Light-Sneakers Shop (No.57)', 200000, 140000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Shoes Item 2 -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="shoes" data-keywords="shoes shoe sneakers adidas eqt sanchaung times city" data-title="Adidas EQT Bask ADV Sneakers" data-store="Fashion in Time" data-location="Times City Mall, 4th Floor A-402, Sanchaung, Yangon" data-price="135000" data-discount="25">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1518002171953-a080ee817e1f?auto=format&fit=crop&w=700&q=80" alt="Adidas EQT Bask ADV Sneakers">
+                        <span class="badge-discount">-25% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T18:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Fashion in Time</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Shoes</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Times City Mall, 4th Floor A-402, Sanchaung, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Adidas EQT Bask ADV Sneakers</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">135,000 MMK</span>
+                                <span class="price-old">180,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 45,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Adidas EQT Bask ADV Sneakers', 'Fashion in Time (Times City Mall)', 180000, 135000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Bags Item 1 (Urgent < 24 Hours Alert Card) -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="bags" data-keywords="bags bag crossbody leather bahan" data-title="Classic Leather Crossbody Bag" data-store="The Classy Branded Collection" data-location="Inya Palace Center, Kabar Aye Pagoda Road, Bahan, Yangon" data-price="84000" data-discount="30">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=700&q=80" alt="Classic Leather Crossbody Bag">
+                        <span class="badge-discount">-30% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-02T16:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>The Classy Branded Collection</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Bags</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Inya Palace Center, Kabar Aye Pagoda Road, Bahan, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Classic Leather Crossbody Bag</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 2, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">84,000 MMK</span>
+                                <span class="price-old">120,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 36,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Classic Leather Crossbody Bag', 'The Classy Branded Collection (Inya Palace Center)', 120000, 84000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Bags Item 2 (Expired Monochrome Demo Card) -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="bags" data-keywords="bags bag tote mingalar taung nyunt" data-title="Structured Everyday Tote Bag" data-store="MSTY Branded Bags" data-location="GaMonePwint Mall (E1-07), Mingalar Taung Nyunt, Yangon" data-price="55000" data-discount="45">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=700&q=80" alt="Structured Everyday Tote Bag">
+                        <span class="badge-discount">-45% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-01T11:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>MSTY Branded Bags</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Bags</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>GaMonePwint Mall (E1-07), Mingalar Taung Nyunt, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Structured Everyday Tote Bag</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 1, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">55,000 MMK</span>
+                                <span class="price-old">100,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 45,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Structured Everyday Tote Bag', 'MSTY Branded Bags (GaMonePwint Mall)', 100000, 55000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. Jewelry Item -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="jewelry" data-keywords="jewelry necklace gold pendant kamayut hledan" data-title="18K Gold Layered Pendant Necklace" data-store="Fancy House Jewelry" data-location="G-10, Tower-B, Diamond Condo, Hledan, Kamayut, Yangon" data-price="90000" data-discount="40">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&w=700&q=80" alt="18K Gold Layered Pendant Necklace">
+                        <span class="badge-discount">-40% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-05T19:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Fancy House Jewelry</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Jewelry</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>G-10, Tower-B, Diamond Condo, Hledan, Kamayut, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">18K Gold Layered Pendant Necklace</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 5, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">90,000 MMK</span>
+                                <span class="price-old">150,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 60,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('18K Gold Layered Pendant Necklace', 'Fancy House Jewelry (G-10)', 150000, 90000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. Sunglasses Item -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="sunglasses" data-keywords="sunglasses shades eyewear south okkalapa" data-title="Retro Round Frame UV400 Sunglasses" data-store="Grand Optics" data-location="No.1136, Thu Mingalar Road, 6th Ward, South Okkalapa, Yangon" data-price="110000" data-discount="50">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=700&q=80" alt="Retro Round Frame UV400 Sunglasses">
+                        <span class="badge-discount">-50% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T15:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Grand Optics</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Sunglasses</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No.1136, Thu Mingalar Road, 6th Ward, South Okkalapa, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Retro Round Frame UV400 Sunglasses</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">110,000 MMK</span>
+                                <span class="price-old">220,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 110,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Retro Round Frame UV400 Sunglasses', 'Grand Optics (No.1136)', 220000, 110000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Smart Savings Calculator Offcanvas Drawer -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="savingsDrawer">
+        <div class="offcanvas-header bg-dark text-white">
+            <h5 class="offcanvas-title fw-bold"><i class="bi bi-calculator me-2 text-warning"></i>Smart Savings Tracker</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column">
+            <div id="savedDealsList" class="flex-grow-1 overflow-auto"></div>
+            <div class="border-top pt-3 mt-3 p-3 rounded-3 empty-state-box">
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="text-muted">Original Store Price:</span>
+                    <span id="totalOriginalPrice" class="text-decoration-line-through text-muted">0 MMK</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="fw-semibold">Discounted Total:</span>
+                    <span id="totalFinalPrice" class="fw-bold fs-5">0 MMK</span>
+                </div>
+                <div class="d-flex justify-content-between p-2 rounded bg-success-subtle text-success fw-bold">
+                    <span>Total Money Saved:</span>
+                    <span id="totalSavedAmount">0 MMK</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <h5 class="fw-bold mb-1">Deal<span class="text-warning">Scout</span></h5>
+            <p class="small text-secondary mb-0">Developed by Group 1 • GUSTO College Web Design Competition 2026</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS & Custom Logic JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

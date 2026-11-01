@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DealScout | Centralized Store Discount Hub</title>
+    <!-- Prevent Dark Mode White Flash on Page Load -->
+    <script>
+        document.documentElement.setAttribute('data-bs-theme', localStorage.getItem('dealScoutTheme') || 'light');
+    </script>
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-dealscout sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand fs-3" href="index.html">
+                <i class="bi bi-tag-fill me-2 text-warning"></i>Deal<span>Scout</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto gap-1">
+                    <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="fashion.html">Fashion</a></li>
+                    <li class="nav-item"><a class="nav-link" href="electronics.html">Electronics</a></li>
+                    <li class="nav-item"><a class="nav-link" href="beauty.html">Beauty</a></li>
+                    <li class="nav-item"><a class="nav-link" href="home-living.html">Home & Living</a></li>
+                </ul>
+                <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                    <!-- Light / Dark Mode Toggle Button -->
+                    <button class="btn btn-theme-toggle" id="themeToggleBtn" type="button" title="Switch Theme">
+                        <i class="bi bi-moon-stars-fill me-1"></i><span>Dark</span>
+                    </button>
+                    <!-- Savings Tracker Drawer Button -->
+                    <button class="btn btn-accent position-relative" data-bs-toggle="offcanvas" data-bs-target="#savingsDrawer">
+                        <i class="bi bi-calculator me-1"></i> Savings Tracker
+                        <span id="savedCountBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Banner Section -->
+    <header class="container my-4">
+        <div class="hero-banner shadow-lg">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <span class="badge bg-warning text-dark fw-bold mb-3 px-3 py-2 rounded-pill">
+                        <i class="bi bi-lightning-charge-fill me-1"></i> LIMITED-TIME STORE PROMOTIONS
+                    </span>
+                    <h1 class="display-5 fw-bold mb-3">Compare & Grab the Best Store Discounts in One Place</h1>
+                    <p class="lead opacity-75 mb-4">
+                        Track real-time promotion validity periods, preview product details & colors, and check exact Yangon store locations on Google Maps before the timer runs out.
+                    </p>
+                    <div class="flash-timer-box">
+                        <span class="fw-bold text-uppercase small">Mega Weekend Deals End In:</span>
+                        <span class="fs-5 fw-bold text-warning" data-expiry="2026-11-05T23:59:59">Loading...</span>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="finder-box p-4 rounded-4 shadow">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-search me-2 text-primary"></i>Quick Deal Finder (All 32 Deals)</h5>
+                        <div class="mb-3">
+                            <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Search product, store, or township (e.g. Nike, S25, Sanchaung)...">
+                        </div>
+                        <div class="mb-2">
+                            <select id="sortSelect" class="form-select form-select-lg">
+                                <option value="default">Sort By: Featured Deals</option>
+                                <option value="discount-desc">Highest Discount (%)</option>
+                                <option value="ending-soon">Ending Soonest (Expiry Alert)</option>
+                                <option value="price-asc">Price: Low to High</option>
+                                <option value="price-desc">Price: High to Low</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 4 Main Category Showcase (Auto-hides when typing in Quick Deal Finder) -->
+    <section class="container my-5" id="categoryShowcaseSection">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h3 class="fw-bold mb-1">Browse by Category</h3>
+                <p class="text-muted mb-0">Explore active discounts across 4 specialized departments</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-6 col-md-3">
+                <a href="fashion.html" class="cat-card">
+                    <div class="cat-icon"><i class="bi bi-handbag"></i></div>
+                    <h5 class="fw-bold mb-1">Fashion</h5>
+                    <small class="text-muted">Clothing, Shoes, Bags, Jewelry, Sunglasses</small>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a href="electronics.html" class="cat-card">
+                    <div class="cat-icon"><i class="bi bi-laptop"></i></div>
+                    <h5 class="fw-bold mb-1">Electronics</h5>
+                    <small class="text-muted">Phones, Laptops, Tablets, Headphones, Cameras</small>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a href="beauty.html" class="cat-card">
+                    <div class="cat-icon"><i class="bi bi-stars"></i></div>
+                    <h5 class="fw-bold mb-1">Beauty</h5>
+                    <small class="text-muted">Cosmetics, Skincare, Perfumes, Hair, Nails</small>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a href="home-living.html" class="cat-card">
+                    <div class="cat-icon"><i class="bi bi-house-heart"></i></div>
+                    <h5 class="fw-bold mb-1">Home & Living</h5>
+                    <small class="text-muted">Furniture, Decor, Bedding, Kitchen, Cleaning</small>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hot Limited-Time Deals & Global Search Results Section -->
+    <main class="container my-5" id="dealsSection">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+            <div>
+                <h3 class="fw-bold mb-1" id="dealsSectionTitle">Hot Flash Deals Across Stores</h3>
+                <p class="text-muted mb-0" id="dealsSectionSubtitle">Click any item image or "Preview" to view product info and exact Google Maps store location</p>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="filter-btn active" data-filter="all">All Hot Deals</button>
+                <button class="filter-btn" data-filter="fashion">Fashion (8)</button>
+                <button class="filter-btn" data-filter="electronics">Electronics (8)</button>
+                <button class="filter-btn" data-filter="beauty">Beauty (8)</button>
+                <button class="filter-btn" data-filter="home">Home & Living (8)</button>
+            </div>
+        </div>
+
+        <div class="row g-4" id="dealsContainer">
+
+            <!-- ================= FEATURED HOT DEALS (4 ITEMS) ================= -->
+
+            <!-- 1. Featured Fashion: Nike Free RN Sneakers -->
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="true" data-subcat="fashion" data-keywords="shoe shoes sneakers footwear nike sanchaung" data-title="Nike Free RN Running Sneakers" data-store="Light-Sneakers Shop" data-location="No.57, Mingalar St & Pannchan St Corner, Sanchaung, Yangon" data-price="140000" data-discount="30">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=80" alt="Nike Free RN Running Sneakers">
+                        <span class="badge-discount">-30% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T20:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Light-Sneakers Shop</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Shoes</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No.57, Mingalar St & Pannchan St Corner, Sanchaung, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Nike Free RN Running Sneakers</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">140,000 MMK</span>
+                                <span class="price-old">200,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 60,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Nike Free RN Running Sneakers', 'Light-Sneakers Shop (No.57)', 200000, 140000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Featured Electronics: Sony Headphones (Expired Black & White Demo Card) -->
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="true" data-subcat="electronics" data-keywords="headphone headphones audio headset sony kyauktada pansodan" data-title="Sony Wireless Noise Canceling Headphones" data-store="Remax Pansodan Corner" data-location="No.237/239, Ground Floor, Pansodan St, Kyauktada, Yangon" data-price="680000" data-discount="20">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=700&q=80" alt="Sony Headphones">
+                        <span class="badge-discount">-20% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-01T10:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Remax Pansodan Corner</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Headphones</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No.237/239, Ground Floor, Pansodan St, Kyauktada, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Sony Wireless Noise Canceling Headphones</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 1, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">680,000 MMK</span>
+                                <span class="price-old">850,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 170,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Sony Wireless Noise Canceling Headphones', 'Remax Pansodan Corner (No.237/239)', 850000, 680000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Featured Beauty: Skincare Bundle (Urgent < 24 Hours Red Alert Demo Card) -->
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="true" data-subcat="beauty" data-keywords="skincare skin glow serum cream kamayut hledan" data-title="Hydrating Glow Skincare Full Bundle" data-store="Beauty Diary" data-location="Hledan Center, Ground Floor, Kamayut, Yangon" data-price="75000" data-discount="40">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=700&q=80" alt="Hydrating Glow Skincare Full Bundle">
+                        <span class="badge-discount">-40% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-02T15:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Beauty Diary</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Skincare</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Hledan Center, Ground Floor, Kamayut, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Hydrating Glow Skincare Full Bundle</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 2, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">75,000 MMK</span>
+                                <span class="price-old">125,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 50,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Hydrating Glow Skincare Full Bundle', 'Beauty Diary (Hledan Center)', 125000, 75000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Featured Home & Living: Nordic Armchair -->
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="true" data-subcat="home" data-keywords="furniture chair sofa armchair living thaketa" data-title="Minimalist Nordic Accent Armchair" data-store="Sweety Home Living Mall" data-location="No. 296/A-12, Ayeyar Wun Road, Thaketa, Yangon" data-price="180000" data-discount="25">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=700&q=80" alt="Minimalist Nordic Accent Armchair">
+                        <span class="badge-discount">-25% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-05T23:59:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Sweety Home Living Mall</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Furniture</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 296/A-12, Ayeyar Wun Road, Thaketa, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Minimalist Nordic Accent Armchair</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 5, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">180,000 MMK</span>
+                                <span class="price-old">240,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 60,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Minimalist Nordic Accent Armchair', 'Sweety Home Living Mall (No. 296/A-12)', 240000, 180000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= REMAINING FASHION DEALS (7 ITEMS) ================= -->
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="fashion" data-keywords="clothing shirt cotton clothes apparel bahan" data-title="Cotton Casual Button-Down Shirt" data-store="Fashmob" data-location="Golden Link Condo, Link Street, Bahan, Yangon" data-price="45500" data-discount="35">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=700&q=80" alt="Cotton Casual Button-Down Shirt">
+                        <span class="badge-discount">-35% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T21:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Fashmob</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Clothing</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Golden Link Condo, Link Street, Bahan, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Cotton Casual Button-Down Shirt</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">45,500 MMK</span>
+                                <span class="price-old">70,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 24,500 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Cotton Casual Button-Down Shirt', 'Fashmob (Golden Link Condo)', 70000, 45500)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="fashion" data-keywords="clothing jacket denim clothes sanchaung times city" data-title="Classic Fit Denim Jacket" data-store="Wave Wear" data-location="Times City Mall, 2nd Floor A226, Sanchaung, Yangon" data-price="64000" data-discount="20">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1551537482-f2075a1d41f2?auto=format&fit=crop&w=700&q=80" alt="Classic Fit Denim Jacket">
+                        <span class="badge-discount">-20% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-05T22:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Wave Wear</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Clothing</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Times City Mall, 2nd Floor A226, Sanchaung, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Classic Fit Denim Jacket</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 5, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">64,000 MMK</span>
+                                <span class="price-old">80,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 16,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Classic Fit Denim Jacket', 'Wave Wear (Times City Mall)', 80000, 64000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="fashion" data-keywords="shoe shoes sneakers footwear adidas eqt sanchaung times city" data-title="Adidas EQT Bask ADV Sneakers" data-store="Fashion in Time" data-location="Times City Mall, 4th Floor A-402, Sanchaung, Yangon" data-price="135000" data-discount="25">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1518002171953-a080ee817e1f?auto=format&fit=crop&w=700&q=80" alt="Adidas EQT Bask ADV Sneakers">
+                        <span class="badge-discount">-25% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T18:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Fashion in Time</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Shoes</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Times City Mall, 4th Floor A-402, Sanchaung, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Adidas EQT Bask ADV Sneakers</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">135,000 MMK</span>
+                                <span class="price-old">180,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 45,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Adidas EQT Bask ADV Sneakers', 'Fashion in Time (Times City Mall)', 180000, 135000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="fashion" data-keywords="bag bags handbag leather crossbody bahan" data-title="Classic Leather Crossbody Bag" data-store="The Classy Branded Collection" data-location="Inya Palace Center, Kabar Aye Pagoda Road, Bahan, Yangon" data-price="84000" data-discount="30">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=700&q=80" alt="Classic Leather Crossbody Bag">
+                        <span class="badge-discount">-30% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-02T16:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>The Classy Branded Collection</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Bags</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Inya Palace Center, Kabar Aye Pagoda Road, Bahan, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Classic Leather Crossbody Bag</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 2, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">84,000 MMK</span>
+                                <span class="price-old">120,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 36,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Classic Leather Crossbody Bag', 'The Classy Branded Collection (Inya Palace Center)', 120000, 84000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="fashion" data-keywords="bag bags tote handbag mingalar taung nyunt" data-title="Structured Everyday Tote Bag" data-store="MSTY Branded Bags" data-location="GaMonePwint Mall (E1-07), Mingalar Taung Nyunt, Yangon" data-price="55000" data-discount="45">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=700&q=80" alt="Structured Everyday Tote Bag">
+                        <span class="badge-discount">-45% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-01T11:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>MSTY Branded Bags</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Bags</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>GaMonePwint Mall (E1-07), Mingalar Taung Nyunt, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Structured Everyday Tote Bag</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 1, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">55,000 MMK</span>
+                                <span class="price-old">100,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 45,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Structured Everyday Tote Bag', 'MSTY Branded Bags (GaMonePwint Mall)', 100000, 55000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="fashion" data-keywords="jewelry necklace ring accessory kamayut hledan" data-title="18K Gold Layered Pendant Necklace" data-store="Fancy House Jewelry" data-location="G-10, Tower-B, Diamond Condo, Hledan, Kamayut, Yangon" data-price="90000" data-discount="40">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&w=700&q=80" alt="18K Gold Layered Pendant Necklace">
+                        <span class="badge-discount">-40% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-05T19:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Fancy House Jewelry</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Jewelry</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>G-10, Tower-B, Diamond Condo, Hledan, Kamayut, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">18K Gold Layered Pendant Necklace</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 5, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">90,000 MMK</span>
+                                <span class="price-old">150,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 60,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('18K Gold Layered Pendant Necklace', 'Fancy House Jewelry (G-10)', 150000, 90000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="fashion" data-keywords="sunglasses shades glasses eyewear south okkalapa" data-title="Retro Round Frame UV400 Sunglasses" data-store="Grand Optics" data-location="No.1136, Thu Mingalar Road, 6th Ward, South Okkalapa, Yangon" data-price="110000" data-discount="50">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=700&q=80" alt="Retro Round Frame UV400 Sunglasses">
+                        <span class="badge-discount">-50% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T15:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Grand Optics</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Sunglasses</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No.1136, Thu Mingalar Road, 6th Ward, South Okkalapa, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Retro Round Frame UV400 Sunglasses</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">110,000 MMK</span>
+                                <span class="price-old">220,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 110,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Retro Round Frame UV400 Sunglasses', 'Grand Optics (No.1136)', 220000, 110000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= REMAINING ELECTRONICS DEALS (7 ITEMS) ================= -->
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="electronics" data-keywords="phone phones smartphone mobile samsung s25 bahan myanmar plaza" data-title="Samsung Galaxy S25 Ultra 5G (256GB)" data-store="Super Mobile Yangon" data-location="Myanmar Plaza, 2nd Floor, Kabar Aye Pagoda Rd, Bahan, Yangon" data-price="3400000" data-discount="15">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://media.extra.com/s/aurora/100506854_800/SAMSUNG-Galaxy-S26-Ultra%2C-5G%2C-256-GB%2C-Black?locale=en-GB,en-*,*&$Listing-Product-2x$" class="img-contain-mode" alt="Samsung Galaxy S25 Ultra 5G">
+                        <span class="badge-discount">-15% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T20:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Super Mobile Yangon</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Phones</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Myanmar Plaza, 2nd Floor, Kabar Aye Pagoda Rd, Bahan, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Samsung Galaxy S25 Ultra 5G (256GB)</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">3,400,000 MMK</span>
+                                <span class="price-old">4,000,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 600,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Samsung Galaxy S25 Ultra 5G (256GB)', 'Super Mobile Yangon (Myanmar Plaza)', 4000000, 3400000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="electronics" data-keywords="phone phones xiaomi redmi mobile sanchaung times city" data-title="Redmi Note 14 Pro 5G" data-store="iSure Mobile" data-location="Times City Mall, 2nd Floor, Sanchaung, Yangon" data-price="960000" data-discount="20">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQish_5Z_wjHWWXAEHaFngCoHXGI5Tsegt_9TX6HOlY03MUdDMTGIilswM&s=10" class="img-contain-mode" alt="Redmi Note 14 Pro 5G">
+                        <span class="badge-discount">-20% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-02T14:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>iSure Mobile</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Phones</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Times City Mall, 2nd Floor, Sanchaung, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Redmi Note 14 Pro 5G</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 2, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">960,000 MMK</span>
+                                <span class="price-old">1,200,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 240,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Redmi Note 14 Pro 5G', 'iSure Mobile (Times City Mall)', 1200000, 960000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="electronics" data-keywords="laptop laptops gaming computer asus kyauktada" data-title="ASUS TUF Gaming F15 (RTX 4060)" data-store="MTC-Computer Sales & Services" data-location="No.161, 38th Street (Middle Block), Kyauktada, Yangon" data-price="2550000" data-discount="15">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=700&q=80" alt="ASUS TUF Gaming F15">
+                        <span class="badge-discount">-15% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-05T21:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>MTC-Computer Sales & Services</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Laptops</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No.161, 38th Street (Middle Block), Kyauktada, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">ASUS TUF Gaming F15 (RTX 4060)</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 5, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">2,550,000 MMK</span>
+                                <span class="price-old">3,000,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 450,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('ASUS TUF Gaming F15 (RTX 4060)', 'MTC-Computer Sales & Services (No.161)', 3000000, 2550000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="electronics" data-keywords="laptop laptops notebook computer dell pazundaung" data-title="Dell Inspiron 15 Core i7 Laptop" data-store="IT Kingdom Digital Life Store" data-location="No.144, Bogyoke Aung San Street, Pazundaung, Yangon" data-price="1440000" data-discount="20">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=700&q=80" alt="Dell Inspiron 15">
+                        <span class="badge-discount">-20% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T18:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>IT Kingdom Digital Life Store</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Laptops</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No.144, Bogyoke Aung San Street, Pazundaung, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Dell Inspiron 15 Core i7 Laptop</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">1,440,000 MMK</span>
+                                <span class="price-old">1,800,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 360,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Dell Inspiron 15 Core i7 Laptop', 'IT Kingdom Digital Life Store (No.144)', 1800000, 1440000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="electronics" data-keywords="tablet tablets ipad apple bahan" data-title="Apple iPad Air Wi-Fi (128GB)" data-store="UNiQUE IT & Mobile Center 3" data-location="No.171, U Chit Maung Road, Bahan, Yangon" data-price="1870000" data-discount="15">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=700&q=80" alt="Apple iPad Air">
+                        <span class="badge-discount">-15% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-05T22:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>UNiQUE IT & Mobile Center 3</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Tablets</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No.171, U Chit Maung Road, Bahan, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Apple iPad Air Wi-Fi (128GB)</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 5, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">1,870,000 MMK</span>
+                                <span class="price-old">2,200,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 330,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Apple iPad Air Wi-Fi (128GB)', 'UNiQUE IT & Mobile Center 3 (No.171)', 2200000, 1870000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="electronics" data-keywords="headphone headphones headset audio north dagon pinlon" data-title="Wireless Pure Bass On-Ear Headset" data-store="Gadgets Corner Yangon" data-location="Pinlon Hills Shopping Mall, 1st Floor, North Dagon, Yangon" data-price="165000" data-discount="45">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=700&q=80" alt="Wireless Pure Bass On-Ear Headset">
+                        <span class="badge-discount">-45% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T16:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Gadgets Corner Yangon</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Headphones</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Pinlon Hills Shopping Mall, 1st Floor, North Dagon, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Wireless Pure Bass On-Ear Headset</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">165,000 MMK</span>
+                                <span class="price-old">300,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 135,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Wireless Pure Bass On-Ear Headset', 'Gadgets Corner Yangon (Pinlon Hills Shopping Mall)', 300000, 165000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="electronics" data-keywords="camera cameras photography canon kyauktada" data-title="Canon EOS Digital Camera & Lens Kit" data-store="Camerashopgallery" data-location="No.182/202, 34th Street, Kyauktada, Yangon" data-price="1750000" data-discount="30">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=700&q=80" alt="Canon EOS Digital Camera">
+                        <span class="badge-discount">-30% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T23:59:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Camerashopgallery</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Cameras</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No.182/202, 34th Street, Kyauktada, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Canon EOS Digital Camera & Lens Kit</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">1,750,000 MMK</span>
+                                <span class="price-old">2,500,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 750,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Canon EOS Digital Camera & Lens Kit', 'Camerashopgallery (No.182/202)', 2500000, 1750000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= REMAINING BEAUTY DEALS (7 ITEMS) ================= -->
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="beauty" data-keywords="cosmetics makeup lipstick junction city pabedan" data-title="Matte Velvet Lipstick Trio Set" data-store="M.A.C Cosmetics" data-location="No. 01-C001, Level 1, Junction City, Pabedan, Yangon" data-price="68000" data-discount="32">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=700&q=80" alt="Matte Velvet Lipstick Trio Set">
+                        <span class="badge-discount">-32% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T21:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>M.A.C Cosmetics</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Cosmetics</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 01-C001, Level 1, Junction City, Pabedan, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Matte Velvet Lipstick Trio Set</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">68,000 MMK</span>
+                                <span class="price-old">100,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 32,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Matte Velvet Lipstick Trio Set', 'M.A.C Cosmetics (No. 01-C001)', 100000, 68000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="beauty" data-keywords="cosmetics makeup palette brush pazundaung" data-title="Pro Makeup Brush & Eyeshadow Palette Combo" data-store="K-Beauty House" data-location="No. 108, Bogyoke Aung San Rd, Corner of Yae Kyaw Rd, Pazundaung" data-price="36000" data-discount="25">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=700&q=80" alt="Pro Makeup Brush & Eyeshadow Palette Combo">
+                        <span class="badge-discount">-25% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T20:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>K-Beauty House</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Cosmetics</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 108, Bogyoke Aung San Rd, Corner of Yae Kyaw Rd, Pazundaung</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Pro Makeup Brush & Eyeshadow Palette Combo</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">36,000 MMK</span>
+                                <span class="price-old">48,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 12,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Pro Makeup Brush & Eyeshadow Palette Combo', 'K-Beauty House (No. 108)', 48000, 36000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="beauty" data-keywords="skincare skin serum dropper dagon taw win" data-title="Advanced Repair Facial Dropper Serum" data-store="The Face Shop" data-location="Taw Win Centre, Pyay Road, Dagon Township, Yangon" data-price="28000" data-discount="30">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=700&q=80" alt="Advanced Repair Facial Dropper Serum">
+                        <span class="badge-discount">-30% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-03T22:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>The Face Shop</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Skincare</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Taw Win Centre, Pyay Road, Dagon Township, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Advanced Repair Facial Dropper Serum</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 3, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">28,000 MMK</span>
+                                <span class="price-old">40,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 12,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Advanced Repair Facial Dropper Serum', 'The Face Shop (Taw Win Centre)', 40000, 28000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="beauty" data-keywords="perfume perfumes fragrance scent junction city" data-title="Luxury Floral Eau De Parfum (100ml)" data-store="Fragrance Gallery" data-location="Junction City, Level 1, Pabedan, Yangon" data-price="165000" data-discount="25">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=700&q=80" alt="Luxury Floral Eau De Parfum">
+                        <span class="badge-discount">-25% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-01T09:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Fragrance Gallery</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Perfumes</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Junction City, Level 1, Pabedan, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Luxury Floral Eau De Parfum (100ml)</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 1, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">165,000 MMK</span>
+                                <span class="price-old">220,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 55,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Luxury Floral Eau De Parfum (100ml)', 'Fragrance Gallery (Junction City)', 220000, 165000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="beauty" data-keywords="hair salon styling spa times city kamayut" data-title="Keratin Hair Spa & Salon Blowout Package" data-store="V-47 Hair Salon" data-location="Building 4, No. 4C-411 (03-04), Times City, Kamayut, Yangon" data-price="45000" data-discount="50">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=700&q=80" alt="Keratin Hair Spa">
+                        <span class="badge-discount">-50% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-05T20:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>V-47 Hair Salon</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Hair & Styling</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Building 4, No. 4C-411 (03-04), Times City, Kamayut, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Keratin Hair Spa & Salon Blowout Package</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 5, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">45,000 MMK</span>
+                                <span class="price-old">90,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 45,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Keratin Hair Spa & Salon Blowout Package', 'V-47 Hair Salon (Building 4)', 90000, 45000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="beauty" data-keywords="hair styling care kit bahan inya" data-title="Professional Salon Hair Styling & Care Kit" data-store="Hair Republic Salon" data-location="No. 135, 1st Floor, Inya Road, Bahan, Yangon" data-price="52500" data-discount="30">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=700&q=80" alt="Professional Salon Hair Styling & Care Kit">
+                        <span class="badge-discount">-30% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T21:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Hair Republic Salon</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Hair & Styling</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 135, 1st Floor, Inya Road, Bahan, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Professional Salon Hair Styling & Care Kit</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">52,500 MMK</span>
+                                <span class="price-old">75,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 22,500 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Professional Salon Hair Styling & Care Kit', 'Hair Republic Salon (No. 135)', 75000, 52500)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="beauty" data-keywords="nail nails manicure pedicure salon bahan" data-title="Gel Nail Art & Luxury Spa Manicure" data-store="Luna Studio" data-location="No. 53-C, 2nd Shwe Taung Kyar St, Golden Valley, Bahan, Yangon" data-price="24000" data-discount="40">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=700&q=80" alt="Gel Nail Art & Luxury Spa Manicure">
+                        <span class="badge-discount">-40% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T18:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Luna Studio</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Nail Salons</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 53-C, 2nd Shwe Taung Kyar St, Golden Valley, Bahan, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Gel Nail Art & Luxury Spa Manicure</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">24,000 MMK</span>
+                                <span class="price-old">40,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 16,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Gel Nail Art & Luxury Spa Manicure', 'Luna Studio (No. 53-C)', 40000, 24000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= REMAINING HOME & LIVING DEALS (7 ITEMS) ================= -->
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="home" data-keywords="furniture chair desk office lanmadaw" data-title="Ergonomic Swivel Office Desk Chair" data-store="Crown Furniture" data-location="No. 195, Anawrahta Rd, Corner of 13th St, Lanmadaw, Yangon" data-price="130000" data-discount="35">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1580480055273-228ff5388ef8?auto=format&fit=crop&w=700&q=80" alt="Ergonomic Swivel Office Desk Chair">
+                        <span class="badge-discount">-35% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T20:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Crown Furniture</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Furniture</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 195, Anawrahta Rd, Corner of 13th St, Lanmadaw, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Ergonomic Swivel Office Desk Chair</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">130,000 MMK</span>
+                                <span class="price-old">200,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 70,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Ergonomic Swivel Office Desk Chair', 'Crown Furniture (No. 195)', 200000, 130000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="home" data-keywords="decor lamp light lighting mingalar taung nyunt" data-title="Modern Warm LED Dining Pendant Lamp" data-store="PRO 1 Global Home Center" data-location="No. 5, Upper Pazundaung Rd, Mingalar Taung Nyunt, Yangon" data-price="45000" data-discount="30">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=700&q=80" alt="Modern Warm LED Dining Pendant Lamp">
+                        <span class="badge-discount">-30% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T18:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>PRO 1 Global Home Center</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Decor</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 5, Upper Pazundaung Rd, Mingalar Taung Nyunt, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Modern Warm LED Dining Pendant Lamp</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">45,000 MMK</span>
+                                <span class="price-old">65,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 20,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Modern Warm LED Dining Pendant Lamp', 'PRO 1 Global Home Center (No. 5)', 65000, 45000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="home" data-keywords="bedding bedsheet pillow bedroom tamwe" data-title="Luxury 1000-Thread Cotton Bedsheet Set" data-store="Sweety Home – Kyaik Ka San" data-location="No. 2A1/16G, East Race Course Road, Tamwe, Yangon" data-price="55000" data-discount="40">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=700&q=80" alt="Luxury 1000-Thread Cotton Bedsheet Set">
+                        <span class="badge-discount">-40% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T22:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Sweety Home – Kyaik Ka San</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Bedding</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 2A1/16G, East Race Course Road, Tamwe, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Luxury 1000-Thread Cotton Bedsheet Set</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">55,000 MMK</span>
+                                <span class="price-old">92,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 37,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Luxury 1000-Thread Cotton Bedsheet Set', 'Sweety Home – Kyaik Ka San (No. 2A1/16G)', 92000, 55000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="home" data-keywords="kitchenware kitchen appliance blender myanmar plaza bahan" data-title="Pro High-Speed Kitchen Blender (1.5L)" data-store="Lock & Lock Official" data-location="Shop 205, 2nd Floor, Myanmar Plaza, Kabar Aye Pagoda Rd, Bahan" data-price="210000" data-discount="20">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1570222094114-d054a817e56b?auto=format&fit=crop&w=700&q=80" alt="Pro High-Speed Kitchen Blender">
+                        <span class="badge-discount">-20% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-05T20:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Lock & Lock Official</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Kitchenware</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Shop 205, 2nd Floor, Myanmar Plaza, Kabar Aye Pagoda Rd, Bahan</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Pro High-Speed Kitchen Blender (1.5L)</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 5, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">210,000 MMK</span>
+                                <span class="price-old">265,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 55,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Pro High-Speed Kitchen Blender (1.5L)', 'Lock & Lock Official (Shop 205)', 265000, 210000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="home" data-keywords="kitchenware kitchen cookware pan pot lanmadaw" data-title="6-Piece Non-Stick Granite Cookware Set" data-store="Mike Mike Steel" data-location="No. 141, Ground Floor, Lanmadaw Plaza, Lanmadaw, Yangon" data-price="95000" data-discount="30">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=700&q=80" alt="6-Piece Non-Stick Granite Cookware Set">
+                        <span class="badge-discount">-30% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-01T12:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Mike Mike Steel</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Kitchenware</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 141, Ground Floor, Lanmadaw Plaza, Lanmadaw, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">6-Piece Non-Stick Granite Cookware Set</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 1, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">95,000 MMK</span>
+                                <span class="price-old">135,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 40,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('6-Piece Non-Stick Granite Cookware Set', 'Mike Mike Steel (No. 141)', 135000, 95000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="home" data-keywords="cleaning vacuum robot cleaner tamwe" data-title="Smart Robot Vacuum & Floor Mop Cleaner" data-store="Hako Myanmar" data-location="No. 17, Kyauk Myaung Street, Tamwe, Yangon" data-price="320000" data-discount="25">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=700&q=80" alt="Smart Robot Vacuum & Floor Mop Cleaner">
+                        <span class="badge-discount">-25% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T18:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Hako Myanmar</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Cleaning</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 17, Kyauk Myaung Street, Tamwe, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Smart Robot Vacuum & Floor Mop Cleaner</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">320,000 MMK</span>
+                                <span class="price-old">430,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 110,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Smart Robot Vacuum & Floor Mop Cleaner', 'Hako Myanmar (No. 17)', 430000, 320000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 deal-col" data-hot="false" data-subcat="home" data-keywords="cleaning spray mop detergent pabedan" data-title="Eco-Friendly Deep Home Cleaning Kit" data-store="New Generation MST" data-location="No. 72, Shwedagon Pagoda Road, Pabedan, Yangon" data-price="22000" data-discount="45">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?auto=format&fit=crop&w=700&q=80" alt="Eco-Friendly Deep Home Cleaning Kit">
+                        <span class="badge-discount">-45% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-02T17:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>New Generation MST</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Cleaning</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 72, Shwedagon Pagoda Road, Pabedan, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Eco-Friendly Deep Home Cleaning Kit</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 2, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">22,000 MMK</span>
+                                <span class="price-old">40,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 18,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Eco-Friendly Deep Home Cleaning Kit', 'New Generation MST (No. 72)', 40000, 22000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Smart Savings Calculator Offcanvas Drawer -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="savingsDrawer">
+        <div class="offcanvas-header bg-dark text-white">
+            <h5 class="offcanvas-title fw-bold"><i class="bi bi-calculator me-2 text-warning"></i>Smart Savings Tracker</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column">
+            <div id="savedDealsList" class="flex-grow-1 overflow-auto"></div>
+            <div class="border-top pt-3 mt-3 p-3 rounded-3 empty-state-box">
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="text-muted">Original Store Price:</span>
+                    <span id="totalOriginalPrice" class="text-decoration-line-through text-muted">0 MMK</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="fw-semibold">Discounted Total:</span>
+                    <span id="totalFinalPrice" class="fw-bold fs-5">0 MMK</span>
+                </div>
+                <div class="d-flex justify-content-between p-2 rounded bg-success-subtle text-success fw-bold">
+                    <span>Total Money Saved:</span>
+                    <span id="totalSavedAmount">0 MMK</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <h5 class="fw-bold mb-1">Deal<span class="text-warning">Scout</span></h5>
+            <p class="small text-secondary mb-0">Developed by Group 1 • GUSTO College Web Design Competition 2026</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS & Custom Logic JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

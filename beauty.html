@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beauty Deals | DealScout</title>
+    <!-- Prevent Dark Mode White Flash on Page Load -->
+    <script>
+        document.documentElement.setAttribute('data-bs-theme', localStorage.getItem('dealScoutTheme') || 'light');
+    </script>
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-dealscout sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand fs-3" href="index.html">
+                <i class="bi bi-tag-fill me-2 text-warning"></i>Deal<span>Scout</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto gap-1">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="fashion.html">Fashion</a></li>
+                    <li class="nav-item"><a class="nav-link" href="electronics.html">Electronics</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="beauty.html">Beauty</a></li>
+                    <li class="nav-item"><a class="nav-link" href="home-living.html">Home & Living</a></li>
+                </ul>
+                <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                    <!-- Light / Dark Mode Toggle Button -->
+                    <button class="btn btn-theme-toggle" id="themeToggleBtn" type="button" title="Switch Theme">
+                        <i class="bi bi-moon-stars-fill me-1"></i><span>Dark</span>
+                    </button>
+                    <!-- Savings Tracker Drawer Button -->
+                    <button class="btn btn-accent position-relative" data-bs-toggle="offcanvas" data-bs-target="#savingsDrawer">
+                        <i class="bi bi-calculator me-1"></i> Savings Tracker
+                        <span id="savedCountBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Beauty Category Header Banner -->
+    <header class="container my-4">
+        <div class="hero-banner shadow-sm py-4 px-4">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <div class="d-inline-flex align-items-center gap-2 bg-white bg-opacity-10 px-3 py-1 rounded-pill mb-2">
+                        <i class="bi bi-stars text-warning"></i>
+                        <span class="small fw-semibold">BEAUTY & SELF-CARE PROMOTIONS</span>
+                    </div>
+                    <h1 class="display-6 fw-bold mb-2">Beauty & Salon Discounts</h1>
+                    <p class="mb-0 opacity-75">
+                        Discover limited-time promotions and exact Yangon branch locations on Cosmetics, Skincare, Perfumes, Hair & Styling, and Nail Salons.
+                    </p>
+                </div>
+                <div class="col-lg-5">
+                    <div class="row g-2">
+                        <div class="col-sm-7">
+                            <div class="input-group">
+                                <span class="input-group-text border-0"><i class="bi bi-search text-muted"></i></span>
+                                <input type="text" id="searchInput" class="form-control border-0 py-2" placeholder="Search brand, salon, or township...">
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <select id="sortSelect" class="form-select border-0 py-2">
+                                <option value="default">Sort: Featured</option>
+                                <option value="discount-desc">Highest Discount %</option>
+                                <option value="ending-soon">Ending Soonest</option>
+                                <option value="price-asc">Price: Low to High</option>
+                                <option value="price-desc">Price: High to Low</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sub-Category Filter Pills & Product Grid -->
+    <main class="container my-5">
+        <!-- Sub-Category Filter Bar -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3 filter-bar-box p-3 rounded-4 shadow-sm">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-funnel-fill text-primary fs-5"></i>
+                <span class="fw-bold">Sub-Categories:</span>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="filter-btn active" data-filter="all">All Beauty (8)</button>
+                <button class="filter-btn" data-filter="cosmetics"><i class="bi bi-palette me-1"></i>Cosmetics</button>
+                <button class="filter-btn" data-filter="skincare"><i class="bi bi-droplet-half me-1"></i>Skincare</button>
+                <button class="filter-btn" data-filter="perfumes"><i class="bi bi-flower1 me-1"></i>Perfumes</button>
+                <button class="filter-btn" data-filter="hair"><i class="bi bi-scissors me-1"></i>Hair & Styling</button>
+                <button class="filter-btn" data-filter="nails"><i class="bi bi-magic me-1"></i>Nail Salons</button>
+            </div>
+        </div>
+
+        <!-- Deals Grid -->
+        <div class="row g-4" id="dealsContainer">
+
+            <!-- 1. Cosmetics Item 1 -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="cosmetics" data-keywords="cosmetics lipstick mac junction city pabedan" data-title="Matte Velvet Lipstick Trio Set" data-store="M.A.C Cosmetics" data-location="No. 01-C001, Level 1, Junction City, Pabedan, Yangon" data-price="68000" data-discount="32">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=700&q=80" alt="Matte Velvet Lipstick Trio Set">
+                        <span class="badge-discount">-32% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T21:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>M.A.C Cosmetics</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Cosmetics</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 01-C001, Level 1, Junction City, Pabedan, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Matte Velvet Lipstick Trio Set</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">68,000 MMK</span>
+                                <span class="price-old">100,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 32,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Matte Velvet Lipstick Trio Set', 'M.A.C Cosmetics (No. 01-C001)', 100000, 68000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Cosmetics Item 2 -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="cosmetics" data-keywords="cosmetics makeup brush palette pazundaung" data-title="Pro Makeup Brush & Eyeshadow Palette Combo" data-store="K-Beauty House" data-location="No. 108, Bogyoke Aung San Rd, Corner of Yae Kyaw Rd, Pazundaung" data-price="36000" data-discount="25">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=700&q=80" alt="Pro Makeup Brush & Eyeshadow Palette Combo">
+                        <span class="badge-discount">-25% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T20:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>K-Beauty House</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Cosmetics</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 108, Bogyoke Aung San Rd, Corner of Yae Kyaw Rd, Pazundaung</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Pro Makeup Brush & Eyeshadow Palette Combo</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">36,000 MMK</span>
+                                <span class="price-old">48,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 12,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Pro Makeup Brush & Eyeshadow Palette Combo', 'K-Beauty House (No. 108)', 48000, 36000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Skincare Item 1 (Urgent < 24 Hours Alert Demo) -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="skincare" data-keywords="skincare hydrating glow kamayut hledan" data-title="Hydrating Glow Skincare Full Bundle" data-store="Beauty Diary" data-location="Hledan Center, Ground Floor, Kamayut, Yangon" data-price="75000" data-discount="40">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=700&q=80" alt="Hydrating Glow Skincare Full Bundle">
+                        <span class="badge-discount">-40% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-02T15:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Beauty Diary</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Skincare</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Hledan Center, Ground Floor, Kamayut, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Hydrating Glow Skincare Full Bundle</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 2, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">75,000 MMK</span>
+                                <span class="price-old">125,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 50,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Hydrating Glow Skincare Full Bundle', 'Beauty Diary (Hledan Center)', 125000, 75000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Skincare Item 2 -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="skincare" data-keywords="skincare serum dropper dagon taw win" data-title="Advanced Repair Facial Dropper Serum" data-store="The Face Shop" data-location="Taw Win Centre, Pyay Road, Dagon Township, Yangon" data-price="28000" data-discount="30">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=700&q=80" alt="Advanced Repair Facial Dropper Serum">
+                        <span class="badge-discount">-30% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-03T22:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>The Face Shop</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Skincare</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Taw Win Centre, Pyay Road, Dagon Township, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Advanced Repair Facial Dropper Serum</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 3, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">28,000 MMK</span>
+                                <span class="price-old">40,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 12,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Advanced Repair Facial Dropper Serum', 'The Face Shop (Taw Win Centre)', 40000, 28000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Perfumes Item (Expired Monochrome Demo Card) -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="perfumes" data-keywords="perfumes perfume fragrance junction city pabedan" data-title="Luxury Floral Eau De Parfum (100ml)" data-store="Fragrance Gallery" data-location="Junction City, Level 1, Pabedan, Yangon" data-price="165000" data-discount="25">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=700&q=80" alt="Luxury Floral Eau De Parfum">
+                        <span class="badge-discount">-25% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-01T09:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Fragrance Gallery</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Perfumes</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Junction City, Level 1, Pabedan, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Luxury Floral Eau De Parfum (100ml)</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 1, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">165,000 MMK</span>
+                                <span class="price-old">220,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 55,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Luxury Floral Eau De Parfum (100ml)', 'Fragrance Gallery (Junction City)', 220000, 165000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Hair & Styling Item 1 -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="hair" data-keywords="hair keratin salon spa times city kamayut" data-title="Keratin Hair Spa & Salon Blowout Package" data-store="V-47 Hair Salon" data-location="Building 4, No. 4C-411 (03-04), Times City, Kamayut, Yangon" data-price="45000" data-discount="50">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=700&q=80" alt="Keratin Hair Spa">
+                        <span class="badge-discount">-50% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-05T20:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>V-47 Hair Salon</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Hair & Styling</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Building 4, No. 4C-411 (03-04), Times City, Kamayut, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Keratin Hair Spa & Salon Blowout Package</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 5, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">45,000 MMK</span>
+                                <span class="price-old">90,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 45,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Keratin Hair Spa & Salon Blowout Package', 'V-47 Hair Salon (Building 4)', 90000, 45000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. Hair & Styling Item 2 -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="hair" data-keywords="hair styling care kit bahan inya" data-title="Professional Salon Hair Styling & Care Kit" data-store="Hair Republic Salon" data-location="No. 135, 1st Floor, Inya Road, Bahan, Yangon" data-price="52500" data-discount="30">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=700&q=80" alt="Professional Salon Hair Styling & Care Kit">
+                        <span class="badge-discount">-30% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T21:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Hair Republic Salon</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Hair & Styling</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 135, 1st Floor, Inya Road, Bahan, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Professional Salon Hair Styling & Care Kit</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">52,500 MMK</span>
+                                <span class="price-old">75,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 22,500 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Professional Salon Hair Styling & Care Kit', 'Hair Republic Salon (No. 135)', 75000, 52500)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. Nail Salons Item -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="nails" data-keywords="nails nail manicure salon bahan" data-title="Gel Nail Art & Luxury Spa Manicure" data-store="Luna Studio" data-location="No. 53-C, 2nd Shwe Taung Kyar St, Golden Valley, Bahan, Yangon" data-price="24000" data-discount="40">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=700&q=80" alt="Gel Nail Art & Luxury Spa Manicure">
+                        <span class="badge-discount">-40% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T18:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Luna Studio</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Nail Salons</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No. 53-C, 2nd Shwe Taung Kyar St, Golden Valley, Bahan, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Gel Nail Art & Luxury Spa Manicure</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">24,000 MMK</span>
+                                <span class="price-old">40,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 16,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Gel Nail Art & Luxury Spa Manicure', 'Luna Studio (No. 53-C)', 40000, 24000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Smart Savings Calculator Offcanvas Drawer -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="savingsDrawer">
+        <div class="offcanvas-header bg-dark text-white">
+            <h5 class="offcanvas-title fw-bold"><i class="bi bi-calculator me-2 text-warning"></i>Smart Savings Tracker</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column">
+            <div id="savedDealsList" class="flex-grow-1 overflow-auto"></div>
+            <div class="border-top pt-3 mt-3 p-3 rounded-3 empty-state-box">
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="text-muted">Original Store Price:</span>
+                    <span id="totalOriginalPrice" class="text-decoration-line-through text-muted">0 MMK</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="fw-semibold">Discounted Total:</span>
+                    <span id="totalFinalPrice" class="fw-bold fs-5">0 MMK</span>
+                </div>
+                <div class="d-flex justify-content-between p-2 rounded bg-success-subtle text-success fw-bold">
+                    <span>Total Money Saved:</span>
+                    <span id="totalSavedAmount">0 MMK</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <h5 class="fw-bold mb-1">Deal<span class="text-warning">Scout</span></h5>
+            <p class="small text-secondary mb-0">Developed by Group 1 • GUSTO College Web Design Competition 2026</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS & Custom Logic JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

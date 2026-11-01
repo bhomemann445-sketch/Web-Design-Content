@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electronics Deals | DealScout</title>
+    <!-- Prevent Dark Mode White Flash on Page Load -->
+    <script>
+        document.documentElement.setAttribute('data-bs-theme', localStorage.getItem('dealScoutTheme') || 'light');
+    </script>
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-dealscout sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand fs-3" href="index.html">
+                <i class="bi bi-tag-fill me-2 text-warning"></i>Deal<span>Scout</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto gap-1">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="fashion.html">Fashion</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="electronics.html">Electronics</a></li>
+                    <li class="nav-item"><a class="nav-link" href="beauty.html">Beauty</a></li>
+                    <li class="nav-item"><a class="nav-link" href="home-living.html">Home & Living</a></li>
+                </ul>
+                <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                    <!-- Light / Dark Mode Toggle Button -->
+                    <button class="btn btn-theme-toggle" id="themeToggleBtn" type="button" title="Switch Theme">
+                        <i class="bi bi-moon-stars-fill me-1"></i><span>Dark</span>
+                    </button>
+                    <!-- Savings Tracker Drawer Button -->
+                    <button class="btn btn-accent position-relative" data-bs-toggle="offcanvas" data-bs-target="#savingsDrawer">
+                        <i class="bi bi-calculator me-1"></i> Savings Tracker
+                        <span id="savedCountBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Electronics Category Header Banner -->
+    <header class="container my-4">
+        <div class="hero-banner shadow-sm py-4 px-4">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <div class="d-inline-flex align-items-center gap-2 bg-white bg-opacity-10 px-3 py-1 rounded-pill mb-2">
+                        <i class="bi bi-cpu-fill text-warning"></i>
+                        <span class="small fw-semibold">TECH & GADGET PROMOTIONS</span>
+                    </div>
+                    <h1 class="display-6 fw-bold mb-2">Electronics & IT Discounts</h1>
+                    <p class="mb-0 opacity-75">
+                        Grab time-limited deals and check exact Yangon showroom locations on Phones, Laptops, Tablets, Headphones, and Cameras.
+                    </p>
+                </div>
+                <div class="col-lg-5">
+                    <div class="row g-2">
+                        <div class="col-sm-7">
+                            <div class="input-group">
+                                <span class="input-group-text border-0"><i class="bi bi-search text-muted"></i></span>
+                                <input type="text" id="searchInput" class="form-control border-0 py-2" placeholder="Search gadget, store, or township...">
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <select id="sortSelect" class="form-select border-0 py-2">
+                                <option value="default">Sort: Featured</option>
+                                <option value="discount-desc">Highest Discount %</option>
+                                <option value="ending-soon">Ending Soonest</option>
+                                <option value="price-asc">Price: Low to High</option>
+                                <option value="price-desc">Price: High to Low</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sub-Category Filter Pills & Product Grid -->
+    <main class="container my-5">
+        <!-- Sub-Category Filter Bar -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3 filter-bar-box p-3 rounded-4 shadow-sm">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-funnel-fill text-primary fs-5"></i>
+                <span class="fw-bold">Sub-Categories:</span>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="filter-btn active" data-filter="all">All Tech (8)</button>
+                <button class="filter-btn" data-filter="phones"><i class="bi bi-phone me-1"></i>Phones</button>
+                <button class="filter-btn" data-filter="laptops"><i class="bi bi-laptop me-1"></i>Laptops</button>
+                <button class="filter-btn" data-filter="tablets"><i class="bi bi-tablet me-1"></i>Tablets</button>
+                <button class="filter-btn" data-filter="headphones"><i class="bi bi-headphones me-1"></i>Headphones</button>
+                <button class="filter-btn" data-filter="cameras"><i class="bi bi-camera me-1"></i>Cameras</button>
+            </div>
+        </div>
+
+        <!-- Deals Grid -->
+        <div class="row g-4" id="dealsContainer">
+
+            <!-- 1. Phones Item 1: Samsung Galaxy S25 Ultra 5G -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="phones" data-keywords="phones phone samsung s25 ultra bahan myanmar plaza" data-title="Samsung Galaxy S25 Ultra 5G (256GB)" data-store="Super Mobile Yangon" data-location="Myanmar Plaza, 2nd Floor, Kabar Aye Pagoda Rd, Bahan, Yangon" data-price="3400000" data-discount="15">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://media.extra.com/s/aurora/100506854_800/SAMSUNG-Galaxy-S26-Ultra%2C-5G%2C-256-GB%2C-Black?locale=en-GB,en-*,*&$Listing-Product-2x$" class="img-contain-mode" alt="Samsung Galaxy S25 Ultra 5G">
+                        <span class="badge-discount">-15% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T20:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Super Mobile Yangon</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Phones</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Myanmar Plaza, 2nd Floor, Kabar Aye Pagoda Rd, Bahan, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Samsung Galaxy S25 Ultra 5G (256GB)</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">3,400,000 MMK</span>
+                                <span class="price-old">4,000,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 600,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Samsung Galaxy S25 Ultra 5G (256GB)', 'Super Mobile Yangon (Myanmar Plaza)', 4000000, 3400000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Phones Item 2: Redmi Note 14 Pro 5G (Urgent < 24 Hours Alert Demo) -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="phones" data-keywords="phones phone xiaomi redmi sanchaung times city" data-title="Redmi Note 14 Pro 5G" data-store="iSure Mobile" data-location="Times City Mall, 2nd Floor, Sanchaung, Yangon" data-price="960000" data-discount="20">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQish_5Z_wjHWWXAEHaFngCoHXGI5Tsegt_9TX6HOlY03MUdDMTGIilswM&s=10" class="img-contain-mode" alt="Redmi Note 14 Pro 5G">
+                        <span class="badge-discount">-20% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-02T14:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>iSure Mobile</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Phones</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Times City Mall, 2nd Floor, Sanchaung, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Redmi Note 14 Pro 5G</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 2, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">960,000 MMK</span>
+                                <span class="price-old">1,200,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 240,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Redmi Note 14 Pro 5G', 'iSure Mobile (Times City Mall)', 1200000, 960000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Laptops Item 1 -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="laptops" data-keywords="laptops laptop asus tuf gaming kyauktada" data-title="ASUS TUF Gaming F15 (RTX 4060)" data-store="MTC-Computer Sales & Services" data-location="No.161, 38th Street (Middle Block), Kyauktada, Yangon" data-price="2550000" data-discount="15">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=700&q=80" alt="ASUS TUF Gaming F15">
+                        <span class="badge-discount">-15% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-05T21:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>MTC-Computer Sales & Services</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Laptops</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No.161, 38th Street (Middle Block), Kyauktada, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">ASUS TUF Gaming F15 (RTX 4060)</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 5, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">2,550,000 MMK</span>
+                                <span class="price-old">3,000,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 450,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('ASUS TUF Gaming F15 (RTX 4060)', 'MTC-Computer Sales & Services (No.161)', 3000000, 2550000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Laptops Item 2 -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="laptops" data-keywords="laptops laptop dell inspiron pazundaung" data-title="Dell Inspiron 15 Core i7 Laptop" data-store="IT Kingdom Digital Life Store" data-location="No.144, Bogyoke Aung San Street, Pazundaung, Yangon" data-price="1440000" data-discount="20">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=700&q=80" alt="Dell Inspiron 15">
+                        <span class="badge-discount">-20% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T18:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>IT Kingdom Digital Life Store</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Laptops</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No.144, Bogyoke Aung San Street, Pazundaung, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Dell Inspiron 15 Core i7 Laptop</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">1,440,000 MMK</span>
+                                <span class="price-old">1,800,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 360,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Dell Inspiron 15 Core i7 Laptop', 'IT Kingdom Digital Life Store (No.144)', 1800000, 1440000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Tablets Item -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="tablets" data-keywords="tablets tablet ipad apple bahan" data-title="Apple iPad Air Wi-Fi (128GB)" data-store="UNiQUE IT & Mobile Center 3" data-location="No.171, U Chit Maung Road, Bahan, Yangon" data-price="1870000" data-discount="15">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=700&q=80" alt="Apple iPad Air">
+                        <span class="badge-discount">-15% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-05T22:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>UNiQUE IT & Mobile Center 3</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Tablets</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No.171, U Chit Maung Road, Bahan, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Apple iPad Air Wi-Fi (128GB)</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 5, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">1,870,000 MMK</span>
+                                <span class="price-old">2,200,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 330,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Apple iPad Air Wi-Fi (128GB)', 'UNiQUE IT & Mobile Center 3 (No.171)', 2200000, 1870000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Headphones Item 1 (Expired Monochrome Demo Card) -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="headphones" data-keywords="headphones headphone sony pansodan kyauktada" data-title="Sony Wireless Noise Canceling Headphones" data-store="Remax Pansodan Corner" data-location="No.237/239, Ground Floor, Pansodan St, Kyauktada, Yangon" data-price="680000" data-discount="20">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=700&q=80" alt="Sony Wireless Headphones">
+                        <span class="badge-discount">-20% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-01T10:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Remax Pansodan Corner</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Headphones</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No.237/239, Ground Floor, Pansodan St, Kyauktada, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Sony Wireless Noise Canceling Headphones</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 1, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">680,000 MMK</span>
+                                <span class="price-old">850,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 170,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Sony Wireless Noise Canceling Headphones', 'Remax Pansodan Corner (No.237/239)', 850000, 680000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. Headphones Item 2 -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="headphones" data-keywords="headphones headphone headset north dagon pinlon" data-title="Wireless Pure Bass On-Ear Headset" data-store="Gadgets Corner Yangon" data-location="Pinlon Hills Shopping Mall, 1st Floor, North Dagon, Yangon" data-price="165000" data-discount="45">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=700&q=80" alt="Wireless Pure Bass On-Ear Headset">
+                        <span class="badge-discount">-45% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T16:00:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Gadgets Corner Yangon</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Headphones</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Pinlon Hills Shopping Mall, 1st Floor, North Dagon, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Wireless Pure Bass On-Ear Headset</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">165,000 MMK</span>
+                                <span class="price-old">300,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 135,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Wireless Pure Bass On-Ear Headset', 'Gadgets Corner Yangon (Pinlon Hills Shopping Mall)', 300000, 165000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. Cameras Item -->
+            <div class="col-md-6 col-lg-3 deal-col" data-subcat="cameras" data-keywords="cameras camera canon kyauktada" data-title="Canon EOS Digital Camera & Lens Kit" data-store="Camerashopgallery" data-location="No.182/202, 34th Street, Kyauktada, Yangon" data-price="1750000" data-discount="30">
+                <div class="deal-card">
+                    <div class="deal-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=700&q=80" alt="Canon EOS Digital Camera">
+                        <span class="badge-discount">-30% OFF</span>
+                        <span class="badge-timer" data-expiry="2026-11-04T23:59:00">Loading...</span>
+                    </div>
+                    <div class="p-3 d-flex flex-column flex-grow-1">
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="store-tag"><i class="bi bi-shop me-1"></i>Camerashopgallery</span>
+                                <span class="badge bg-secondary-subtle text-secondary border">Cameras</span>
+                            </div>
+                            <div class="store-location mt-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i>No.182/202, 34th Street, Kyauktada, Yangon</div>
+                        </div>
+                        <h6 class="fw-bold mb-1">Canon EOS Digital Camera & Lens Kit</h6>
+                        <small class="text-muted mb-3">Valid until: Nov 4, 2026</small>
+                        <div class="mt-auto">
+                            <div class="d-flex align-items-baseline gap-2 mb-2">
+                                <span class="price-new">1,750,000 MMK</span>
+                                <span class="price-old">2,500,000 MMK</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="savings-pill">Save 750,000 MMK</span>
+                                <button class="btn btn-sm btn-accent save-deal-btn" onclick="addSavedDeal('Canon EOS Digital Camera & Lens Kit', 'Camerashopgallery (No.182/202)', 2500000, 1750000)">
+                                    <i class="bi bi-bookmark-plus me-1"></i>Save Deal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Smart Savings Calculator Offcanvas Drawer -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="savingsDrawer">
+        <div class="offcanvas-header bg-dark text-white">
+            <h5 class="offcanvas-title fw-bold"><i class="bi bi-calculator me-2 text-warning"></i>Smart Savings Tracker</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column">
+            <div id="savedDealsList" class="flex-grow-1 overflow-auto"></div>
+            <div class="border-top pt-3 mt-3 p-3 rounded-3 empty-state-box">
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="text-muted">Original Store Price:</span>
+                    <span id="totalOriginalPrice" class="text-decoration-line-through text-muted">0 MMK</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="fw-semibold">Discounted Total:</span>
+                    <span id="totalFinalPrice" class="fw-bold fs-5">0 MMK</span>
+                </div>
+                <div class="d-flex justify-content-between p-2 rounded bg-success-subtle text-success fw-bold">
+                    <span>Total Money Saved:</span>
+                    <span id="totalSavedAmount">0 MMK</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <h5 class="fw-bold mb-1">Deal<span class="text-warning">Scout</span></h5>
+            <p class="small text-secondary mb-0">Developed by Group 1 • GUSTO College Web Design Competition 2026</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS & Custom Logic JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
