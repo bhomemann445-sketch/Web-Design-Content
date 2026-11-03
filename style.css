@@ -47,20 +47,27 @@ html, body {
     width: 100%;
 }
 
-/* Navbar Styling */
+/* ==========================================================================
+   GLASSMORPHISM STICKY NAVBAR & HERO BANNER ANIMATED GLOW ORBS
+   ========================================================================== */
 .navbar-dealscout {
-    background-color: #1E3A8A !important;
-    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.18);
+    background: rgba(30, 58, 138, 0.88) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.18);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    transition: background-color 0.3s ease;
 }
 
 [data-bs-theme="dark"] .navbar-dealscout {
-    background-color: #0F172A !important;
-    border-bottom: 1px solid var(--border-color);
+    background: rgba(15, 23, 42, 0.86) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .navbar-brand {
     color: #FFFFFF !important;
     font-weight: 800;
+    letter-spacing: -0.3px;
 }
 
 .navbar-brand span {
@@ -69,15 +76,16 @@ html, body {
 
 .nav-link {
     color: rgba(255, 255, 255, 0.85) !important;
-    font-weight: 500;
-    transition: all 0.2s ease;
+    font-weight: 600;
+    transition: all 0.25s ease;
     padding: 0.5rem 1rem !important;
-    border-radius: 8px;
+    border-radius: 10px;
 }
 
 .nav-link:hover, .nav-link.active {
     color: #FFFFFF !important;
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.16);
+    transform: translateY(-1px);
 }
 
 /* Theme Toggle Button */
@@ -96,30 +104,184 @@ html, body {
     color: #FFFFFF;
 }
 
-/* Hero Banner */
+/* Hero Banner with Animated Floating Glow Orbs */
 .hero-banner {
-    background: linear-gradient(135deg, #1E3A8A 0%, #172554 100%);
+    background: linear-gradient(135deg, #1E3A8A 0%, #172554 55%, #0F172A 100%);
     color: white;
-    border-radius: 20px;
+    border-radius: 22px;
     padding: 3rem 2.5rem;
     position: relative;
     overflow: hidden;
+    z-index: 1;
+    border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 [data-bs-theme="dark"] .hero-banner {
-    background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+    background: linear-gradient(135deg, #1E293B 0%, #0F172A 65%, #090D16 100%);
     border: 1px solid var(--border-color);
 }
 
+.hero-banner::before {
+    content: "";
+    position: absolute;
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 90, 31, 0.38) 0%, rgba(255, 90, 31, 0) 70%);
+    top: -120px;
+    right: -60px;
+    z-index: -1;
+    pointer-events: none;
+    animation: heroOrbFloat1 9s ease-in-out infinite alternate;
+}
+
+.hero-banner::after {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.28) 0%, rgba(56, 189, 248, 0) 70%);
+    bottom: -110px;
+    left: 10%;
+    z-index: -1;
+    pointer-events: none;
+    animation: heroOrbFloat2 11s ease-in-out infinite alternate;
+}
+
+@keyframes heroOrbFloat1 {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-45px, 35px) scale(1.15); }
+}
+
+@keyframes heroOrbFloat2 {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(50px, -30px) scale(1.18); }
+}
+
+/* ==========================================================================
+   UPGRADED SINGLE SEARCH BOX & POPULAR TAGS IN HERO BANNER
+   ========================================================================== */
 .finder-box {
-    background-color: var(--bg-card);
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     color: var(--text-dark);
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.22) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+[data-bs-theme="dark"] .finder-box {
+    background: rgba(30, 41, 59, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.finder-box:focus-within {
+    transform: translateY(-2px);
+}
+
+.modern-search-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.modern-search-icon {
+    position: absolute;
+    left: 16px;
+    color: var(--primary-navy);
+    font-size: 1.1rem;
+    pointer-events: none;
+    z-index: 2;
+}
+
+[data-bs-theme="dark"] .modern-search-icon {
+    color: #60A5FA;
+}
+
+.modern-search-input-wrap #searchInput {
+    padding-left: 44px !important;
+    padding-right: 40px !important;
+    height: 50px;
+    border-radius: 12px !important;
+    border: 1.5px solid var(--border-color) !important;
+    background-color: var(--bg-main) !important;
+    color: var(--text-dark) !important;
+    font-size: 0.96rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.modern-search-input-wrap #searchInput:focus {
+    border-color: var(--accent-orange) !important;
+    background-color: var(--bg-card) !important;
+    box-shadow: 0 0 0 4px rgba(255, 90, 31, 0.16) !important;
+}
+
+.search-clear-btn {
+    position: absolute;
+    right: 12px;
+    background: var(--border-color);
+    color: var(--text-dark);
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    z-index: 2;
+}
+
+.search-clear-btn:hover {
+    background: var(--accent-orange);
+    color: #FFFFFF;
+}
+
+/* Popular Quick Search Tags */
+.popular-tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.popular-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-right: 2px;
+}
+
+.popular-tag-btn {
+    background: var(--store-tag-bg);
+    color: var(--store-tag-text);
+    border: 1px solid rgba(59, 130, 246, 0.22);
+    border-radius: 50px;
+    padding: 3px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.popular-tag-btn:hover,
+.popular-tag-btn.active {
+    background: var(--accent-orange);
+    color: #FFFFFF;
+    border-color: var(--accent-orange);
+    transform: translateY(-1px);
 }
 
 .flash-timer-box {
-    background: rgba(255, 90, 31, 0.18);
-    border: 1px solid var(--accent-orange);
+    background: rgba(255, 90, 31, 0.2);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 90, 31, 0.65);
     border-radius: 12px;
     padding: 12px 20px;
     display: inline-flex;
@@ -127,9 +289,96 @@ html, body {
     align-items: center;
     gap: 8px 12px;
     max-width: 100%;
+    box-shadow: 0 8px 20px rgba(255, 90, 31, 0.15);
 }
 
-/* Category Cards */
+/* ==========================================================================
+   LOWER CONTROLS BAR (COUNTER + DAYS LEFT DROPDOWN + SORT BY DROPDOWN)
+   ========================================================================== */
+.deals-ResultAndControls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.25rem;
+}
+
+#liveResultCounter {
+    white-space: normal !important;
+    text-align: left;
+    line-height: 1.45;
+    max-width: 100%;
+}
+
+.deal-dropdowns-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.control-select-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.control-select-icon {
+    position: absolute;
+    left: 12px;
+    font-size: 0.92rem;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.deal-control-select {
+    padding-left: 34px !important;
+    padding-right: 32px !important;
+    padding-top: 7px !important;
+    padding-bottom: 7px !important;
+    border-radius: 50px !important;
+    border: 1px solid var(--border-color) !important;
+    background-color: var(--bg-card) !important;
+    color: var(--text-dark) !important;
+    font-size: 0.84rem !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    transition: all 0.2s ease;
+    min-width: 185px;
+}
+
+.deal-control-select:hover,
+.deal-control-select:focus {
+    border-color: var(--primary-navy) !important;
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.12) !important;
+}
+
+[data-bs-theme="dark"] .deal-control-select:hover,
+[data-bs-theme="dark"] .deal-control-select:focus {
+    border-color: #60A5FA !important;
+}
+
+/* ==========================================================================
+   STAGGERED SCROLL & FILTER REVEAL ANIMATIONS
+   ========================================================================== */
+@keyframes dealCardFadeUp {
+    0% {
+        opacity: 0;
+        transform: translateY(28px) scale(0.97);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.deal-col.card-reveal-anim {
+    animation: dealCardFadeUp 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 .cat-card {
     background: var(--bg-card);
     border-radius: 16px;
@@ -138,18 +387,19 @@ html, body {
     text-decoration: none;
     color: var(--text-dark);
     border: 1px solid var(--border-color);
-    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100%;
+    animation: dealCardFadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .cat-card:hover {
-    transform: translateY(-6px);
+    transform: translateY(-7px);
     border-color: var(--accent-orange);
-    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
 }
 
 .cat-icon {
@@ -163,12 +413,13 @@ html, body {
     justify-content: center;
     font-size: 1.75rem;
     margin-bottom: 1rem;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
 }
 
 .cat-card:hover .cat-icon {
     background-color: var(--accent-orange);
     color: white;
+    transform: scale(1.08) rotate(-4deg);
 }
 
 /* Filter Bar & Buttons */
@@ -185,7 +436,7 @@ html, body {
     padding: 8px 18px;
     font-weight: 600;
     font-size: 0.9rem;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    transition: all 0.22s ease;
     white-space: nowrap;
 }
 
@@ -193,6 +444,8 @@ html, body {
     background-color: #1E3A8A;
     color: white;
     border-color: #1E3A8A;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.25);
 }
 
 [data-bs-theme="dark"] .filter-btn:hover,
@@ -200,13 +453,7 @@ html, body {
     background-color: #3B82F6;
     color: white;
     border-color: #3B82F6;
-}
-
-#liveResultCounter {
-    white-space: normal !important;
-    text-align: left;
-    line-height: 1.45;
-    max-width: 100%;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 /* Product Deal Cards */
@@ -215,15 +462,16 @@ html, body {
     border-radius: 16px;
     border: 1px solid var(--border-color);
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+    transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.32s ease, border-color 0.32s ease, filter 0.3s ease;
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
 .deal-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 16px 32px rgba(15, 23, 42, 0.15);
+    transform: translateY(-7px);
+    border-color: rgba(255, 90, 31, 0.45);
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.14);
 }
 
 .deal-img-wrapper {
@@ -238,7 +486,7 @@ html, body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .deal-img-wrapper img.img-contain-mode {
@@ -248,7 +496,7 @@ html, body {
 }
 
 .deal-card:hover .deal-img-wrapper img {
-    transform: scale(1.06);
+    transform: scale(1.07);
 }
 
 /* Quick Preview Floating Button on Card Image */
@@ -257,7 +505,7 @@ html, body {
     top: 12px;
     right: 12px;
     background: rgba(15, 23, 42, 0.78);
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(6px);
     color: #FFFFFF;
     border: 1px solid rgba(255, 255, 255, 0.25);
     font-size: 0.76rem;
@@ -271,7 +519,7 @@ html, body {
 .btn-quick-preview-overlay:hover {
     background: var(--primary-navy);
     color: #FFFFFF;
-    transform: scale(1.05);
+    transform: scale(1.06);
 }
 
 .badge-discount {
@@ -334,6 +582,7 @@ html, body {
 .deal-card.deal-expired:hover {
     transform: none;
     box-shadow: none;
+    border-color: #64748B;
 }
 
 .deal-card.deal-expired .deal-img-wrapper img {
@@ -434,13 +683,14 @@ html, body {
     border: none;
     border-radius: 10px;
     padding: 8px 14px;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.15s ease;
     white-space: nowrap;
 }
 
 .btn-accent:hover {
     background-color: var(--accent-orange-hover);
     color: white;
+    transform: translateY(-1px);
 }
 
 .empty-state-box {
@@ -449,8 +699,26 @@ html, body {
 }
 
 /* ==========================================================================
-   PRODUCT PREVIEW MODAL (NO EMPTY GAP + LARGER GOOGLE MAP + NO SCROLLBAR)
+   SMOOTH SPRING MODAL ANIMATION & BLURRED BACKDROP
    ========================================================================== */
+.modal-backdrop.show {
+    opacity: 1 !important;
+    background-color: rgba(15, 23, 42, 0.58) !important;
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+}
+
+#productPreviewModal.modal.fade .modal-dialog {
+    transform: scale(0.88) translateY(24px);
+    opacity: 0;
+    transition: transform 0.36s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.22s ease;
+}
+
+#productPreviewModal.modal.show .modal-dialog {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
 #productPreviewModal {
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -473,11 +741,12 @@ html, body {
     background-color: var(--bg-card);
     color: var(--text-dark);
     border: 1px solid var(--border-color);
-    border-radius: 18px;
+    border-radius: 20px;
     overflow: hidden;
     max-height: 95vh;
     display: flex;
     flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.4) !important;
 }
 
 #productPreviewModal .modal-body {
@@ -529,7 +798,7 @@ html, body {
 }
 
 .color-swatch:hover {
-    transform: scale(1.1);
+    transform: scale(1.12);
 }
 
 .color-swatch.active {
@@ -639,13 +908,22 @@ html, body {
     }
 
     .finder-box {
-        padding: 1.25rem !important;
+        padding: 1.15rem !important;
     }
 
-    .finder-box .form-control-lg,
-    .finder-box .form-select-lg {
-        font-size: 0.95rem;
-        padding: 0.6rem 0.85rem;
+    .deal-dropdowns-group {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .control-select-wrapper {
+        flex: 1 1 calc(50% - 6px);
+    }
+
+    .deal-control-select {
+        width: 100%;
+        min-width: 0;
+        font-size: 0.78rem !important;
     }
 
     .cat-card {
