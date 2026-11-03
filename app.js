@@ -1,15 +1,16 @@
-// app.js - DealScout Final Logic (All 32 Custom Store Names, Map Links & Full Card Store Name Display)
+// app.js - DealScout Final Logic (Single Top Search Box + Popular Tags + Method A Days Left Dropdown & Sort Dropdown)
 
 let savedDeals = JSON.parse(localStorage.getItem('dealScoutSaved')) || [];
 const recoloredImageCache = {};
 
 // ==========================================================================
-// MASTER CATALOG: 32 PRODUCTS WITH EXACT STORE NAMES, ADDRESSES & MAP LINKS
+// MASTER CATALOG: 32 PRODUCTS WITH PRODUCT-ONLY TAGS, STORES & MAP LINKS
 // ==========================================================================
 const REAL_PRODUCT_DATABASE = {
     // ---------------- FASHION (1 - 8) ----------------
     "Nike Air Zoom": {
         exactTitle: "Nike Free RN Running Sneakers",
+        productKeywords: "shoe shoes sneaker sneakers footwear running nike",
         mainImg: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=80",
         store: "Light-Sneakers Shop",
         location: "No.57, Mingalar St & Pannchan St Corner, Sanchaung, Yangon",
@@ -25,6 +26,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Adidas": {
         exactTitle: "Adidas EQT Bask ADV Sneakers",
+        productKeywords: "shoe shoes sneaker sneakers footwear adidas eqt",
         mainImg: "https://images.unsplash.com/photo-1518002171953-a080ee817e1f?auto=format&fit=crop&w=700&q=80",
         store: "Orchid Fashion Boutique",
         location: "No.10, Kwin Kyaung 1st St, Ahlone, Yangon",
@@ -37,6 +39,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Linen Casual Shirt": {
         exactTitle: "Cotton Casual Button-Down Shirt",
+        productKeywords: "clothing clothes shirt shirts cotton casual top apparel",
         mainImg: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=700&q=80",
         store: "Fashmob",
         location: "Golden Link Condo, Link Street, Bahan, Yangon",
@@ -52,6 +55,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Denim Jacket": {
         exactTitle: "Classic Fit Denim Jacket",
+        productKeywords: "clothing clothes jacket jackets denim coat outerwear apparel",
         mainImg: "https://images.unsplash.com/photo-1551537482-f2075a1d41f2?auto=format&fit=crop&w=700&q=80",
         store: "Nang Closet",
         location: "No.9, Wai Zayan Dar Street & Aung Thukha Street corner, Thingangyun",
@@ -64,6 +68,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Crossbody Bag": {
         exactTitle: "Classic Leather Crossbody Bag",
+        productKeywords: "bag bags handbag leather crossbody purse",
         mainImg: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=700&q=80",
         store: "The Classy Branded Collection",
         location: "Sedona Hotel Court, Kabar Aye Pagoda Rd, Yangon",
@@ -76,6 +81,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Everyday Tote Bag": {
         exactTitle: "Structured Everyday Tote Bag",
+        productKeywords: "bag bags tote handbag shoulder purse",
         mainImg: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=700&q=80",
         store: "MSTY Branded Bags",
         location: "GaMonePwint Mall (E1-07), Mingalar Taung Nyunt, Yangon",
@@ -88,6 +94,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Pendant Necklace": {
         exactTitle: "18K Gold Layered Pendant Necklace",
+        productKeywords: "jewelry necklace pendant gold chain accessory",
         mainImg: "https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&w=700&q=80",
         store: "Fancy House Jewelry",
         location: "No.29 Padonmar St, Yangon",
@@ -100,6 +107,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Aviator Shades": {
         exactTitle: "Retro Round Frame UV400 Sunglasses",
+        productKeywords: "sunglasses shades eyewear glasses uv400",
         mainImg: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=700&q=80",
         store: "Grand Optics",
         location: "No.1136, Thu Mingalar Road, 6th Ward, South Okkalapa, Yangon",
@@ -114,6 +122,7 @@ const REAL_PRODUCT_DATABASE = {
     // ---------------- ELECTRONICS (9 - 16) ----------------
     "Galaxy S24": {
         exactTitle: "Samsung Galaxy S25 Ultra 5G (256GB)",
+        productKeywords: "phone phones smartphone mobile samsung galaxy s25 ultra 5g",
         mainImg: "https://media.extra.com/s/aurora/100506854_800/SAMSUNG-Galaxy-S26-Ultra%2C-5G%2C-256-GB%2C-Black?locale=en-GB,en-*,*&$Listing-Product-2x$",
         imgFit: "contain",
         store: "Samsung Experience Store",
@@ -138,6 +147,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Redmi Note": {
         exactTitle: "Redmi Note 14 Pro 5G",
+        productKeywords: "phone phones smartphone mobile xiaomi redmi note 14 pro 5g",
         mainImg: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQish_5Z_wjHWWXAEHaFngCoHXGI5Tsegt_9TX6HOlY03MUdDMTGIilswM&s=10",
         imgFit: "contain",
         store: "Anycall Mobile",
@@ -162,6 +172,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "ASUS TUF Gaming": {
         exactTitle: "ASUS TUF Gaming F15 (RTX 4060)",
+        productKeywords: "laptop laptops notebook computer gaming asus tuf f15 rtx",
         mainImg: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=700&q=80",
         store: "MTC-Computer Sales & Services",
         location: "No.161, 38th Street (Middle Block), Kyauktada, Yangon",
@@ -174,6 +185,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Dell Inspiron": {
         exactTitle: "Dell Inspiron 15 Core i7 Laptop",
+        productKeywords: "laptop laptops notebook computer dell inspiron core i7",
         mainImg: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=700&q=80",
         store: "IT Kingdom",
         location: "Bo Gyoke Aung San Rd, Yangon",
@@ -186,6 +198,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "iPad Air": {
         exactTitle: "Apple iPad Air Wi-Fi (128GB)",
+        productKeywords: "tablet tablets ipad apple air wifi",
         mainImg: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=700&q=80",
         store: "UNiQUE IT & Mobile Center 3",
         location: "No.171, U Chit Maung Road, Bahan, Yangon",
@@ -198,6 +211,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Sony": {
         exactTitle: "Sony Wireless Noise Canceling Headphones",
+        productKeywords: "headphone headphones headset audio wireless sony",
         mainImg: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=700&q=80",
         store: "REMAX Brand Shop Seikanthar",
         location: "No-354/Mahabandula Street/between Seikanthar & MM, 39th St, Yangon 11182",
@@ -210,6 +224,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "JBL Pure Bass": {
         exactTitle: "Wireless Pure Bass On-Ear Headset",
+        productKeywords: "headphone headphones headset audio wireless bass",
         mainImg: "https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=700&q=80",
         store: "Gadgets Corne",
         location: "Corner Of Bagaya St, and Pyay Rd, Yangon 11111",
@@ -222,6 +237,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Canon EOS": {
         exactTitle: "Canon EOS Digital Camera & Lens Kit",
+        productKeywords: "camera cameras digital canon eos lens photography",
         mainImg: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=700&q=80",
         store: "CameraShopGallery",
         location: "No.182/202, 34th Street, Kyauktada, Yangon",
@@ -236,6 +252,7 @@ const REAL_PRODUCT_DATABASE = {
     // ---------------- BEAUTY (17 - 24) ----------------
     "Velvet Lipstick": {
         exactTitle: "Matte Velvet Lipstick Trio Set",
+        productKeywords: "cosmetics makeup lipstick lip matte velvet",
         mainImg: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=700&q=80",
         store: "M&M Cosmetic House",
         location: "No. 22, Pan Chann Street, Sanchaung",
@@ -248,6 +265,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Foundation": {
         exactTitle: "Pro Makeup Brush & Eyeshadow Palette Combo",
+        productKeywords: "cosmetics makeup brush eyeshadow palette combo",
         mainImg: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=700&q=80",
         store: "K-Beauty House",
         location: "No. 108, Bogyoke Aung San Rd, Corner of Yae Kyaw Rd, Pazundaung",
@@ -260,6 +278,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Glow Skincare": {
         exactTitle: "Hydrating Glow Skincare Full Bundle",
+        productKeywords: "skincare skin hydrating glow bundle cream cleanser toner",
         mainImg: "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=700&q=80",
         store: "Beauty Diary",
         location: "Kamaryut Township, Insein Road, Ward 1, Yangon",
@@ -272,6 +291,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "COSRX": {
         exactTitle: "Advanced Repair Facial Dropper Serum",
+        productKeywords: "skincare skin facial serum dropper repair essence",
         mainImg: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=700&q=80",
         store: "The Face Shop",
         location: "11131 Pyay Rd, Yangon",
@@ -284,6 +304,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Eau De Parfum": {
         exactTitle: "Luxury Floral Eau De Parfum (100ml)",
+        productKeywords: "perfume perfumes fragrance floral parfum scent",
         mainImg: "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=700&q=80",
         store: "30K Perfumes",
         location: "Shwe Bontha, Middle Street, Yangon",
@@ -296,6 +317,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Keratin Hair Spa": {
         exactTitle: "Keratin Hair Spa & Salon Blowout Package",
+        productKeywords: "hair keratin spa blowout treatment package",
         mainImg: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=700&q=80",
         store: "V-47 Hair Salon",
         location: "Building 4, No. 4C-411 (03-04), Times City, Kamayut, Yangon",
@@ -308,6 +330,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Hair Styling": {
         exactTitle: "Professional Salon Hair Styling & Care Kit",
+        productKeywords: "hair styling care kit dryer brush",
         mainImg: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=700&q=80",
         store: "Hair Republic Salon",
         location: "No. 135, 1st Floor, Inya Road, Bahan, Yangon",
@@ -320,6 +343,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Gel Nail Art": {
         exactTitle: "Gel Nail Art & Luxury Spa Manicure",
+        productKeywords: "nail nails gel manicure pedicure polish art",
         mainImg: "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=700&q=80",
         store: "Luna Studio",
         location: "No. 53-C, 2nd Shwe Taung Kyar St, Golden Valley, Bahan, Yangon",
@@ -334,6 +358,7 @@ const REAL_PRODUCT_DATABASE = {
     // ---------------- HOME & LIVING (25 - 32) ----------------
     "Nordic Accent Armchair": {
         exactTitle: "Minimalist Nordic Accent Armchair",
+        productKeywords: "furniture armchair chair sofa seat nordic",
         mainImg: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=700&q=80",
         store: "Sweety Home Living Mall",
         location: "No. 296/A-12, Ayeyar Wun Road, Thaketa, Yangon",
@@ -346,6 +371,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Office Desk Chair": {
         exactTitle: "Ergonomic Swivel Office Desk Chair",
+        productKeywords: "furniture chair desk office swivel ergonomic seat",
         mainImg: "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?auto=format&fit=crop&w=700&q=80",
         store: "Crown Furniture",
         location: "No. 195, Anawrahta Rd, Corner of 13th St, Lanmadaw, Yangon",
@@ -358,6 +384,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Pendant Lamp": {
         exactTitle: "Modern Warm LED Dining Pendant Lamp",
+        productKeywords: "decor lamp lighting light led pendant ceiling",
         mainImg: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=700&q=80",
         store: "PRO 1 Global Home Center",
         location: "No. 5, Upper Pazundaung Rd, Mingalar Taung Nyunt, Yangon",
@@ -370,6 +397,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Cotton Bedsheet Set": {
         exactTitle: "Luxury 1000-Thread Cotton Bedsheet Set",
+        productKeywords: "bedding bedsheet bed cotton pillow sheet duvet",
         mainImg: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=700&q=80",
         store: "Sweety Home – Kyaik Ka San",
         location: "No. 2A1/16G, East Race Course Road, Tamwe, Yangon",
@@ -382,6 +410,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Air Fryer": {
         exactTitle: "Pro High-Speed Kitchen Blender (1.5L)",
+        productKeywords: "kitchenware kitchen blender mixer juicer appliance",
         mainImg: "https://images.unsplash.com/photo-1570222094114-d054a817e56b?auto=format&fit=crop&w=700&q=80",
         store: "Lock & Lock Official",
         location: "Shop 205, 2nd Floor, Myanmar Plaza, Kabar Aye Pagoda Rd, Bahan",
@@ -394,6 +423,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Non-Stick Cookware": {
         exactTitle: "6-Piece Non-Stick Granite Cookware Set",
+        productKeywords: "kitchenware kitchen cookware pan pot granite cooking",
         mainImg: "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=700&q=80",
         store: "Mike Mike Steel",
         location: "No. 141, Ground Floor, Lanmadaw Plaza, Lanmadaw, Yangon",
@@ -406,6 +436,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Robot Vacuum": {
         exactTitle: "Smart Robot Vacuum & Floor Mop Cleaner",
+        productKeywords: "cleaning vacuum robot mop cleaner floor",
         mainImg: "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=700&q=80",
         store: "Hako Myanmar",
         location: "No. 17, Kyauk Myaung Street, Tamwe, Yangon",
@@ -418,6 +449,7 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Deep Cleaning Kit": {
         exactTitle: "Eco-Friendly Deep Home Cleaning Kit",
+        productKeywords: "cleaning spray brush detergent cloth kit",
         mainImg: "https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?auto=format&fit=crop&w=700&q=80",
         store: "Urban Focus Cleaning Service Myanmar",
         location: "3rd Floor, No. 25, 10th Street, Lanmadaw",
@@ -577,9 +609,13 @@ function findProductCatalogEntry(title) {
 }
 
 // ==========================================================================
-// SYNC ALL CARDS: ENSURE STORE NAME IS VISIBLE ON BOTH TAG & LOCATION LINE
+// SYNC ALL CARDS: ENSURE STORE NAME & PRODUCT-ONLY KEYWORDS ARE SET
 // ==========================================================================
 function syncAllCardsWithRealStores() {
+    document.querySelectorAll('.cat-card').forEach((catEl, i) => {
+        catEl.style.animationDelay = `${i * 0.08}s`;
+    });
+
     const cols = document.querySelectorAll('.deal-col');
     cols.forEach(col => {
         const rawTitle = col.getAttribute('data-title') || col.querySelector('h6')?.innerText || '';
@@ -591,6 +627,7 @@ function syncAllCardsWithRealStores() {
         col.setAttribute('data-location', entry.locationFull || `${entry.store} - ${entry.location}`);
         col.setAttribute('data-map-query', entry.mapQuery);
         col.setAttribute('data-map-link', entry.mapLink);
+        col.setAttribute('data-product-keywords', entry.productKeywords || '');
 
         const titleEl = col.querySelector('h6');
         if (titleEl) titleEl.innerText = entry.exactTitle;
@@ -605,7 +642,6 @@ function syncAllCardsWithRealStores() {
             }
         }
 
-        // 1. Ensure top store badge (.store-tag) always exists and shows the exact Store Name
         let storeTagEl = col.querySelector('.store-tag');
         const locationEl = col.querySelector('.store-location');
         if (!storeTagEl && locationEl && locationEl.parentNode) {
@@ -620,13 +656,11 @@ function syncAllCardsWithRealStores() {
             storeTagEl.innerHTML = `<i class="bi bi-shop me-1"></i>${entry.store}`;
         }
 
-        // 2. Show Full "Store Name - Address" directly on the card's location line as well!
         if (locationEl) {
             const fullLocationDisplay = entry.locationFull || `${entry.store} - ${entry.location}`;
             locationEl.innerHTML = `<i class="bi bi-geo-alt-fill text-danger me-1"></i><span class="fw-semibold">${fullLocationDisplay}</span>`;
         }
 
-        // 3. Update Save Deal button with the exact store name
         const saveBtn = col.querySelector('.save-deal-btn');
         if (saveBtn) {
             const onclickAttr = saveBtn.getAttribute('onclick') || '';
@@ -726,11 +760,11 @@ function updateCountdowns() {
     });
 }
 
-// 2. Dynamic Filtering, Global Search, Auto-Hide Category & Sort
+// ==========================================================================
+// 2. SINGLE TOP SEARCH BOX WITH POPULAR TAGS + LOWER DUAL DROPDOWNS (METHOD A)
+// ==========================================================================
 function setupFiltersAndSorting() {
     const filterButtons = document.querySelectorAll('.filter-btn');
-    const searchInput = document.getElementById('searchInput');
-    const sortSelect = document.getElementById('sortSelect');
     const dealsContainer = document.getElementById('dealsContainer');
     const categoryShowcase = document.getElementById('categoryShowcaseSection');
     const dealsSectionTitle = document.getElementById('dealsSectionTitle');
@@ -745,14 +779,71 @@ function setupFiltersAndSorting() {
         col.setAttribute('data-original-index', index);
     });
 
+    // A. Upgrade Top Hero Search Area on ALL pages (Remove top dropdown, keep only sleek Search Box + Popular tags)
+    const heroRightCol = document.querySelector('.hero-banner .col-lg-5');
+    if (heroRightCol) {
+        const finderHeading = isHomePage
+            ? `<h5 class="fw-bold mb-2"><i class="bi bi-search me-2 text-primary"></i>Quick Deal Finder (All 32 Deals)</h5>`
+            : `<h6 class="fw-bold mb-2"><i class="bi bi-search me-2 text-primary"></i>Quick Product Search</h6>`;
+
+        heroRightCol.innerHTML = `
+            <div class="finder-box p-3 p-md-4 rounded-4 shadow">
+                ${finderHeading}
+                <div class="modern-search-input-wrap">
+                    <i class="bi bi-search modern-search-icon"></i>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search product name...">
+                    <button type="button" id="clearSearchBtn" class="search-clear-btn d-none" title="Clear search">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                <div class="popular-tags-row">
+                    <span class="popular-label"><i class="bi bi-fire text-danger me-1"></i>Popular:</span>
+                    <button type="button" class="popular-tag-btn" data-tag="shoe">shoe</button>
+                    <button type="button" class="popular-tag-btn" data-tag="Lipstick">Lipstick</button>
+                    <button type="button" class="popular-tag-btn" data-tag="camera">camera</button>
+                </div>
+            </div>
+        `;
+    }
+
+    // B. Create Lower Controls Bar (Left: Result Counter Badge | Right: Method A Days Left Dropdown + Sort By Dropdown)
     const counterDiv = document.createElement('div');
-    counterDiv.className = 'd-flex justify-content-between align-items-center mb-3';
+    counterDiv.className = 'deals-ResultAndControls-bar';
     counterDiv.innerHTML = `
         <span id="liveResultCounter" class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-semibold">
             Loading deals...
         </span>
+        <div class="deal-dropdowns-group">
+            <div class="control-select-wrapper">
+                <i class="bi bi-clock-history control-select-icon text-warning"></i>
+                <select id="daysFilterSelect" class="form-select form-select-sm deal-control-select" aria-label="Filter by validity period">
+                    <option value="all">All Validity Periods</option>
+                    <option value="1">🔥 Ending Today (&lt; 24 Hours)</option>
+                    <option value="3">⏳ Up to 3 Days Left</option>
+                    <option value="5">📅 Up to 5 Days Left</option>
+                    <option value="7">🗓️ Up to 7 Days Left</option>
+                    <option value="expired">❌ Expired Deals Only</option>
+                </select>
+            </div>
+            <div class="control-select-wrapper">
+                <i class="bi bi-arrow-down-up control-select-icon text-primary"></i>
+                <select id="sortSelect" class="form-select form-select-sm deal-control-select" aria-label="Sort deals">
+                    <option value="default">Sort By: Featured Deals</option>
+                    <option value="discount-desc">Highest Discount (%)</option>
+                    <option value="ending-soon">Ending Soonest (Expiry Alert)</option>
+                    <option value="price-asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                </select>
+            </div>
+        </div>
     `;
     dealsContainer.parentNode.insertBefore(counterDiv, dealsContainer);
+
+    const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const popularTagBtns = document.querySelectorAll('.popular-tag-btn');
+    const daysFilterSelect = document.getElementById('daysFilterSelect');
+    const sortSelect = document.getElementById('sortSelect');
 
     const emptyStateEl = document.createElement('div');
     emptyStateEl.id = 'noDealsMessage';
@@ -760,33 +851,50 @@ function setupFiltersAndSorting() {
     emptyStateEl.innerHTML = `
         <div class="empty-state-box p-5 rounded-4 shadow-sm mx-auto" style="max-width: 480px;">
             <i class="bi bi-search-heart display-4 text-muted mb-3 d-block"></i>
-            <h5 class="fw-bold mb-2">No matching deals found</h5>
-            <p class="text-muted small mb-4">We couldn't find any store promotions matching your search or filter criteria.</p>
+            <h5 class="fw-bold mb-2">No matching products found</h5>
+            <p class="text-muted small mb-4">We couldn't find any products matching your search or validity filter criteria.</p>
             <button class="btn btn-accent px-4" id="resetFilterBtn">
-                <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Filters
+                <i class="bi bi-arrow-counterclockwise me-1"></i>Reset All Filters
             </button>
         </div>
     `;
     dealsContainer.parentNode.insertBefore(emptyStateEl, dealsContainer.nextSibling);
 
+    function syncPopularTagUI() {
+        const currentVal = searchInput ? searchInput.value.trim().toLowerCase() : '';
+        if (clearSearchBtn) {
+            clearSearchBtn.classList.toggle('d-none', currentVal === '');
+        }
+        popularTagBtns.forEach(btn => {
+            const tagVal = (btn.getAttribute('data-tag') || '').toLowerCase();
+            btn.classList.toggle('active', currentVal !== '' && currentVal === tagVal);
+        });
+    }
+
     function filterAndSortCards() {
+        syncPopularTagUI();
+
         const activeFilterBtn = document.querySelector('.filter-btn.active');
         const selectedCategory = activeFilterBtn ? activeFilterBtn.getAttribute('data-filter') : 'all';
         const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const selectedDays = daysFilterSelect ? daysFilterSelect.value : 'all';
         const sortBy = sortSelect ? sortSelect.value : 'default';
 
         const escapedQuery = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const searchRegex = new RegExp('\\b' + escapedQuery, 'i');
+        const now = new Date().getTime();
 
         if (isHomePage && categoryShowcase) {
             if (searchQuery !== '') {
                 categoryShowcase.classList.add('d-none');
-                if (dealsSectionTitle) dealsSectionTitle.innerText = 'Global Search Results Across All Stores';
-                if (dealsSectionSubtitle) dealsSectionSubtitle.innerText = `Showing matching deals for "${searchInput.value}" across all 32 store promotions`;
+                if (dealsSectionTitle) dealsSectionTitle.innerText = 'Product Search Results';
+                if (dealsSectionSubtitle) dealsSectionSubtitle.innerText = `Showing matching products for "${searchInput.value}" across all 32 deals`;
             } else {
                 categoryShowcase.classList.remove('d-none');
                 if (dealsSectionTitle) {
-                    dealsSectionTitle.innerText = selectedCategory === 'all' ? 'Hot Flash Deals Across Stores' : 'Filtered Category Deals';
+                    dealsSectionTitle.innerText = (selectedCategory === 'all' && selectedDays === 'all')
+                        ? 'Hot Flash Deals Across Stores'
+                        : 'Filtered Store Deals';
                 }
                 if (dealsSectionSubtitle) {
                     dealsSectionSubtitle.innerText = 'Click any item image or "Preview" to view product info and exact Google Maps store location';
@@ -797,23 +905,35 @@ function setupFiltersAndSorting() {
         cols.forEach(col => {
             const subcat = (col.getAttribute('data-subcat') || '').toLowerCase();
             const title = (col.getAttribute('data-title') || '').toLowerCase();
-            const store = (col.getAttribute('data-store') || '').toLowerCase();
-            const location = (col.getAttribute('data-location') || '').toLowerCase();
-            const keywords = (col.getAttribute('data-keywords') || '').toLowerCase();
+            const productKeywords = (col.getAttribute('data-product-keywords') || '').toLowerCase();
             const isHot = col.getAttribute('data-hot') === 'true';
 
+            const expiryEl = col.querySelector('[data-expiry]');
+            const expiryTime = expiryEl ? new Date(expiryEl.getAttribute('data-expiry')).getTime() : now;
+            const diff = expiryTime - now;
+            const daysLeftFloat = diff / (1000 * 60 * 60 * 24);
+
+            // 1. Category Match
             const matchesCategory = (selectedCategory === 'all' || subcat === selectedCategory);
+
+            // 2. Strict Product-Only Search Match
             const matchesSearch = !searchQuery ||
                                   searchRegex.test(title) ||
-                                  searchRegex.test(store) ||
-                                  searchRegex.test(subcat) ||
-                                  searchRegex.test(location) ||
-                                  searchRegex.test(keywords);
+                                  searchRegex.test(productKeywords);
 
-            if (isHomePage && !searchQuery && selectedCategory === 'all') {
+            // 3. Method A: Validity Period (Days Left) Match
+            let matchesDays = true;
+            if (selectedDays === 'expired') {
+                matchesDays = diff <= 0;
+            } else if (selectedDays !== 'all') {
+                const maxDays = parseFloat(selectedDays);
+                matchesDays = diff > 0 && daysLeftFloat <= maxDays;
+            }
+
+            if (isHomePage && !searchQuery && selectedCategory === 'all' && selectedDays === 'all') {
                 col.style.display = isHot ? '' : 'none';
             } else {
-                col.style.display = (matchesCategory && matchesSearch) ? '' : 'none';
+                col.style.display = (matchesCategory && matchesSearch && matchesDays) ? '' : 'none';
             }
         });
 
@@ -836,14 +956,21 @@ function setupFiltersAndSorting() {
             return indexA - indexB;
         });
 
-        visibleCols.forEach(col => dealsContainer.appendChild(col));
+        // Staggered Fade-Up Reveal Animation
+        visibleCols.forEach((col, idx) => {
+            col.classList.remove('card-reveal-anim');
+            void col.offsetWidth;
+            col.style.animationDelay = `${idx * 0.06}s`;
+            col.classList.add('card-reveal-anim');
+            dealsContainer.appendChild(col);
+        });
 
         const counterBadge = document.getElementById('liveResultCounter');
         if (counterBadge) {
-            if (isHomePage && !searchQuery && selectedCategory === 'all') {
-                counterBadge.innerText = `Showing 4 Featured Hot Deals • Type in Quick Deal Finder above to search all ${cols.length} store deals`;
+            if (isHomePage && !searchQuery && selectedCategory === 'all' && selectedDays === 'all') {
+                counterBadge.innerText = `Showing 4 Featured Hot Deals • Type a product name above to search all ${cols.length} deals`;
             } else {
-                counterBadge.innerText = `Showing ${visibleCols.length} of ${cols.length} active deals`;
+                counterBadge.innerText = `Showing ${visibleCols.length} of ${cols.length} matching deals`;
             }
         }
 
@@ -854,6 +981,45 @@ function setupFiltersAndSorting() {
         }
     }
 
+    // Popular Tag Button Clicks (shoe, Lipstick, camera)
+    popularTagBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (!searchInput) return;
+            const clickedTag = btn.getAttribute('data-tag') || '';
+
+            // Toggle off if already active
+            if (searchInput.value.trim().toLowerCase() === clickedTag.toLowerCase()) {
+                searchInput.value = '';
+                filterAndSortCards();
+                return;
+            }
+
+            // If on a category page that doesn't contain this product, jump to Home Page global search
+            const testRegex = new RegExp('\\b' + clickedTag, 'i');
+            const hasMatchOnCurrentPage = cols.some(col => {
+                const t = (col.getAttribute('data-title') || '').toLowerCase();
+                const pk = (col.getAttribute('data-product-keywords') || '').toLowerCase();
+                return testRegex.test(t) || testRegex.test(pk);
+            });
+
+            if (!hasMatchOnCurrentPage && !isHomePage) {
+                window.location.href = `index.html?q=${encodeURIComponent(clickedTag)}`;
+                return;
+            }
+
+            searchInput.value = clickedTag;
+            filterAndSortCards();
+        });
+    });
+
+    if (clearSearchBtn && searchInput) {
+        clearSearchBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            searchInput.focus();
+            filterAndSortCards();
+        });
+    }
+
     const resetBtn = document.getElementById('resetFilterBtn');
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
@@ -861,6 +1027,7 @@ function setupFiltersAndSorting() {
             const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
             if (allBtn) allBtn.classList.add('active');
             if (searchInput) searchInput.value = '';
+            if (daysFilterSelect) daysFilterSelect.value = 'all';
             if (sortSelect) sortSelect.value = 'default';
             filterAndSortCards();
         });
@@ -875,7 +1042,15 @@ function setupFiltersAndSorting() {
     });
 
     if (searchInput) searchInput.addEventListener('input', filterAndSortCards);
+    if (daysFilterSelect) daysFilterSelect.addEventListener('change', filterAndSortCards);
     if (sortSelect) sortSelect.addEventListener('change', filterAndSortCards);
+
+    // Check if redirected from another page with ?q=tag
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialQuery = urlParams.get('q');
+    if (initialQuery && searchInput) {
+        searchInput.value = initialQuery;
+    }
 
     filterAndSortCards();
 }
@@ -1028,7 +1203,7 @@ function showToastNotification(message, type = 'success') {
 }
 
 // ==========================================================================
-// 5. PRODUCT PREVIEW MODAL (NO EMPTY GAP + EXPANDED GOOGLE MAP + DIRECT LINKS)
+// 5. PRODUCT PREVIEW MODAL (SPRING ANIMATION + BLURRED BACKDROP + DIRECT MAP LINKS)
 // ==========================================================================
 function buildProductPreviewModal() {
     if (document.getElementById('productPreviewModal')) return;
