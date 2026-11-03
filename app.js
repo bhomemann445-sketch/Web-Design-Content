@@ -818,11 +818,11 @@ function setupFiltersAndSorting() {
                 <i class="bi bi-clock-history control-select-icon text-warning"></i>
                 <select id="daysFilterSelect" class="form-select form-select-sm deal-control-select" aria-label="Filter by validity period">
                     <option value="all">All Validity Periods</option>
-                    <option value="1">🔥 Ending Today (&lt; 24 Hours)</option>
-                    <option value="3">⏳ Up to 3 Days Left</option>
-                    <option value="5">📅 Up to 5 Days Left</option>
-                    <option value="7">🗓️ Up to 7 Days Left</option>
-                    <option value="expired">❌ Expired Deals Only</option>
+                    <option value="1"> Ending Today (&lt; 24 Hours)</option>
+                    <option value="3"> Up to 3 Days Left</option>
+                    <option value="5"> Up to 5 Days Left</option>
+                    <option value="7"> Up to 7 Days Left</option>
+                    <option value="expired"> Expired Deals Only</option>
                 </select>
             </div>
             <div class="control-select-wrapper">
