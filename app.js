@@ -1,4 +1,5 @@
-// app.js - DealScout Final Competition Version (Nov 5 Timers + Preview Seasonal Badge + Encrypted Customer Passwords + Mega Footer)
+// app.js - DealScout Final Competition Version
+// Includes: Strict Gmail Password Matching + Clear Saved Deals on Logout + Seasonal Above Hot Deals + Search Auto-Scroll to Category
 
 let savedDeals = JSON.parse(localStorage.getItem('dealScoutSaved')) || [];
 const recoloredImageCache = {};
@@ -87,15 +88,27 @@ function formatNowDateTime() {
     return `${y}-${m}-${d} ${String(hrs).padStart(2, '0')}:${mins}:${secs} ${ampm}`;
 }
 
-function recordCustomerLogin(email, password) {
+// Strict Customer Gmail & Password Verification + Recording
+function verifyAndRecordCustomerLogin(email, password) {
     const data = getAnalyticsData();
     const nowStr = formatNowDateTime();
     const lowerEmail = email.toLowerCase();
-    let existing = data.november2026.customers.find(c => c.email.toLowerCase() === lowerEmail);
-    if (existing) {
-        existing.loginCount += 1;
-        existing.password = password;
-        existing.lastLogin = nowStr;
+
+    const existingNov = data.november2026.customers.find(c => c.email.toLowerCase() === lowerEmail);
+    const existingOct = data.october2026.customers.find(c => c.email.toLowerCase() === lowerEmail);
+    const registeredAccount = existingNov || existingOct;
+
+    // If this Gmail has logged in before, require the exact same password!
+    if (registeredAccount && registeredAccount.password !== password) {
+        return {
+            success: false,
+            message: "Incorrect password for this Gmail account! Please enter your registered password."
+        };
+    }
+
+    if (existingNov) {
+        existingNov.loginCount += 1;
+        existingNov.lastLogin = nowStr;
     } else {
         data.november2026.customers.unshift({
             email: lowerEmail,
@@ -105,7 +118,9 @@ function recordCustomerLogin(email, password) {
             lastLogin: nowStr
         });
     }
+
     saveAnalyticsData(data);
+    return { success: true };
 }
 
 function recordAdminLogin(username, password) {
@@ -143,8 +158,6 @@ function incrementCustomerSaveCount() {
 
 // ==========================================================================
 // 1. MASTER CATALOG: 32 PRODUCTS WITH NOV 5 COMPETITION EXPIRY TIMERS
-//    (Covers <24h [Nov 5 11PM], Up to 3d, Up to 5d, Up to 7d, and Expired)
-//    (All 8 Hot Deals are 100% Active - Zero Expired in Hot Deals!)
 // ==========================================================================
 const REAL_PRODUCT_DATABASE = {
     // ---------------- FASHION (1 - 8) ----------------
@@ -699,61 +712,60 @@ const REAL_PRODUCT_DATABASE = {
 };
 
 // ==========================================================================
-// 2. SEASONAL DISCOUNT MAPPING (4 SEASONS × 4 PRODUCTS = 16 PRODUCTS)
-//    & 8 FEATURED HOT DEALS (ALL 8 ARE ACTIVE - ZERO EXPIRED!)
+// 2. SEASONAL DISCOUNT MAPPING & 8 FEATURED HOT DEALS
 // ==========================================================================
 const SEASONAL_DEALS_MAPPING = {
     thadingyut: {
         label: "Thadingyut",
         badgeText: "Thadingyut Special",
         products: [
-            "18K Gold Layered Pendant Necklace",         // Fashion
-            "Samsung Galaxy S25 Ultra 5G (256GB)",       // Electronics
-            "Hydrating Glow Skincare Full Bundle",       // Beauty
-            "Modern Warm LED Dining Pendant Lamp"        // Home
+            "18K Gold Layered Pendant Necklace",
+            "Samsung Galaxy S25 Ultra 5G (256GB)",
+            "Hydrating Glow Skincare Full Bundle",
+            "Modern Warm LED Dining Pendant Lamp"
         ]
     },
     christmas: {
         label: "Christmas",
         badgeText: "Christmas Deal",
         products: [
-            "Classic Fit Denim Jacket",                  // Fashion
-            "Apple iPad Air Wi-Fi (128GB)",              // Electronics
-            "Matte Velvet Lipstick Trio Set",            // Beauty
-            "Minimalist Nordic Accent Armchair"          // Home
+            "Classic Fit Denim Jacket",
+            "Apple iPad Air Wi-Fi (128GB)",
+            "Matte Velvet Lipstick Trio Set",
+            "Minimalist Nordic Accent Armchair"
         ]
     },
     newyear: {
         label: "New Year",
         badgeText: "New Year Offer",
         products: [
-            "Nike Free RN Running Sneakers",             // Fashion
-            "Sony Wireless Noise Canceling Headphones",  // Electronics
-            "Keratin Hair Spa & Salon Blowout Package",  // Beauty
-            "Pro High-Speed Kitchen Blender (1.5L)"      // Home
+            "Nike Free RN Running Sneakers",
+            "Sony Wireless Noise Canceling Headphones",
+            "Keratin Hair Spa & Salon Blowout Package",
+            "Pro High-Speed Kitchen Blender (1.5L)"
         ]
     },
     monsoon: {
         label: "MonSoon Season",
         badgeText: "MonSoon Promo",
         products: [
-            "Adidas EQT Bask ADV Sneakers",              // Fashion
-            "Redmi Note 14 Pro 5G",                      // Electronics
-            "Advanced Repair Facial Dropper Serum",      // Beauty
-            "Smart Robot Vacuum & Floor Mop Cleaner"     // Home
+            "Adidas EQT Bask ADV Sneakers",
+            "Redmi Note 14 Pro 5G",
+            "Advanced Repair Facial Dropper Serum",
+            "Smart Robot Vacuum & Floor Mop Cleaner"
         ]
     }
 };
 
 const EIGHT_HOT_DEAL_TITLES = [
-    "Nike Free RN Running Sneakers",             // New Year Offer (Up to 3 Days)
-    "18K Gold Layered Pendant Necklace",         // Thadingyut Special (< 24 Hours: Nov 5 11PM)
-    "Sony Wireless Noise Canceling Headphones",  // New Year Offer (Up to 5 Days - Active!)
-    "Redmi Note 14 Pro 5G",                      // MonSoon Promo (< 24 Hours: Nov 5 11PM)
-    "Hydrating Glow Skincare Full Bundle",       // Thadingyut Special (< 24 Hours: Nov 5 11PM)
-    "Matte Velvet Lipstick Trio Set",            // Christmas Deal (Up to 7 Days)
-    "Minimalist Nordic Accent Armchair",         // Christmas Deal (Up to 3 Days)
-    "Smart Robot Vacuum & Floor Mop Cleaner"     // MonSoon Promo (Up to 5 Days)
+    "Nike Free RN Running Sneakers",
+    "18K Gold Layered Pendant Necklace",
+    "Sony Wireless Noise Canceling Headphones",
+    "Redmi Note 14 Pro 5G",
+    "Hydrating Glow Skincare Full Bundle",
+    "Matte Velvet Lipstick Trio Set",
+    "Minimalist Nordic Accent Armchair",
+    "Smart Robot Vacuum & Floor Mop Cleaner"
 ];
 
 function getSeasonBadgeForProduct(exactTitle) {
@@ -822,7 +834,7 @@ function reorderBrowseByCategoryCards() {
 }
 
 // ==========================================================================
-// 3. HOME PAGE 5-SLIDE HERO BANNER CAROUSEL (5s INTERVAL) & SEASONAL SECTION
+// 3. HOME PAGE 5-SLIDE HERO CAROUSEL & SEASONAL SECTION (PLACED ABOVE HOT DEALS!)
 // ==========================================================================
 let heroSlideInterval = null;
 let currentHeroSlideIndex = 0;
@@ -841,7 +853,6 @@ function setupHomeHeroSliderAndSeasonalSection() {
 
     if (!isHomePage) return;
 
-    // Extend "Mega Weekend Deals End In:" timer on Hero Banner so it shows 5+ Days Left on Nov 5
     const heroTimerEl = document.querySelector('.flash-timer-box [data-expiry]');
     if (heroTimerEl) {
         heroTimerEl.setAttribute('data-expiry', '2026-11-10T23:59:59');
@@ -978,6 +989,7 @@ function setupHomeHeroSliderAndSeasonalSection() {
         }
     }
 
+    // B. Build "Seasonal Discount" Section and place it BEFORE #dealsSection (Hot Flash Deals Across Stores)
     if (!document.getElementById('seasonalDiscountSection')) {
         const seasonalSec = document.createElement('section');
         seasonalSec.id = 'seasonalDiscountSection';
@@ -1002,7 +1014,8 @@ function setupHomeHeroSliderAndSeasonalSection() {
             <div class="row g-4" id="seasonalDealsContainer"></div>
         `;
 
-        dealsSection.parentNode.insertBefore(seasonalSec, dealsSection.nextSibling);
+        // SWAPPED ORDER: Insert Seasonal Discount BEFORE Hot Flash Deals Across Stores (#dealsSection)
+        dealsSection.parentNode.insertBefore(seasonalSec, dealsSection);
 
         const seasonalContainer = document.getElementById('seasonalDealsContainer');
         let sOrigIdx = 0;
@@ -1097,7 +1110,7 @@ function activateSeasonalTab(seasonKey, scrollSmooth = false) {
 }
 
 // ==========================================================================
-// 4. FORCED LOGIN GATE
+// 4. FORCED LOGIN GATE (STRICT GMAIL PASSWORD VERIFICATION + CLEAR SAVED ON LOGOUT)
 // ==========================================================================
 function setupForcedAuthGate() {
     if (!document.getElementById('authGateOverlay')) {
@@ -1278,9 +1291,16 @@ function setupForcedAuthGate() {
             return;
         }
 
+        // Verify password matches if this Gmail has logged in before
+        const verifyResult = verifyAndRecordCustomerLogin(email, pass);
+        if (!verifyResult.success) {
+            errAlert.innerText = verifyResult.message;
+            errAlert.classList.remove('d-none');
+            return;
+        }
+
         errAlert.classList.add('d-none');
         pendingCustomer = { email, pass };
-        recordCustomerLogin(email, pass);
 
         loginStepEl.classList.add('d-none');
         catStepEl.classList.remove('d-none');
@@ -1370,15 +1390,25 @@ function setupForcedAuthGate() {
     }
 }
 
+// Clear Savings Tracker completely when logging out!
 function triggerLogoutAndShowLogin() {
     localStorage.removeItem('dealScoutActiveSession');
+
+    // Clear all saved deals from Savings Tracker on Logout
+    savedDeals = [];
+    localStorage.removeItem('dealScoutSaved');
+    renderSavedDeals();
+
     closeCustomPageViews();
     const overlayEl = document.getElementById('authGateOverlay');
     const loginStepEl = document.getElementById('authLoginStep');
     const catStepEl = document.getElementById('authCategoryStep');
+    const errAlert = document.getElementById('authErrorAlert');
+
     if (overlayEl) {
         loginStepEl.classList.remove('d-none');
         catStepEl.classList.add('d-none');
+        if (errAlert) errAlert.classList.add('d-none');
         document.querySelectorAll('.pref-cat-item').forEach(i => i.classList.remove('selected'));
         document.getElementById('custEmailInput').value = '';
         document.getElementById('custPassInput').value = '';
@@ -1512,7 +1542,7 @@ function updateNavbarAuthAndLinks() {
 }
 
 // ==========================================================================
-// 6. PAGE VIEW 1: PRODUCT STATUS BAR CHART PAGE (RENAMED TO PRODUCT STATUS)
+// 6. PAGE VIEW 1: PRODUCT STATUS BAR CHART PAGE
 // ==========================================================================
 const MONTHLY_PRODUCT_STATS = {
     october2026: {
@@ -1725,7 +1755,7 @@ function showProductStatsPageView(selectedMonthKey = 'november2026') {
 }
 
 // ==========================================================================
-// 7. PAGE VIEW 2: ADMIN-ONLY DASHBOARD (EQUAL KPI CARDS & ENCRYPTED CUSTOMER PASSWORDS)
+// 7. PAGE VIEW 2: ADMIN-ONLY DASHBOARD (ENCRYPTED CUSTOMER PASSWORDS)
 // ==========================================================================
 function showAdminDashboardPageView(selectedMonthKey = 'november2026') {
     const session = getCurrentSession();
@@ -1745,7 +1775,6 @@ function showAdminDashboardPageView(selectedMonthKey = 'november2026') {
     const totalLoginSum = customerLoginSum + adminLoginSum;
     const totalSaveSum = monthObj.totalSaveDeals || 0;
 
-    // Customer Passwords are permanently encrypted & non-viewable for Customer Security!
     const custRowsHtml = monthObj.customers.length === 0
         ? `<tr><td colspan="6" class="text-center text-muted py-4">No customer logins recorded yet in November 2026. Log out and sign in as a Customer to test live tracking!</td></tr>`
         : monthObj.customers.map((c, idx) => `
@@ -1808,7 +1837,6 @@ function showAdminDashboardPageView(selectedMonthKey = 'november2026') {
             </div>
         </div>
 
-        <!-- 4 Equal-Sized KPI Cards -->
         <div class="row g-3 mb-4 align-items-stretch">
             <div class="col-sm-6 col-lg-3">
                 <div class="kpi-stat-card h-100">
@@ -1848,7 +1876,6 @@ function showAdminDashboardPageView(selectedMonthKey = 'november2026') {
             </div>
         </div>
 
-        <!-- Table 1: Customer Login & Save Deal Records (Passwords Encrypted & Hidden) -->
         <div class="analytics-panel-card mb-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
@@ -1875,7 +1902,6 @@ function showAdminDashboardPageView(selectedMonthKey = 'november2026') {
             </div>
         </div>
 
-        <!-- Table 2: Admin Login Activity Table -->
         <div class="analytics-panel-card">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
@@ -2042,7 +2068,7 @@ function findProductCatalogEntry(title) {
     if (lower.includes("tote")) return REAL_PRODUCT_DATABASE["Everyday Tote Bag"];
     if (lower.includes("necklace") || lower.includes("pendant")) return REAL_PRODUCT_DATABASE["Pendant Necklace"];
     if (lower.includes("shades") || lower.includes("sunglasses")) return REAL_PRODUCT_DATABASE["Aviator Shades"];
-    if (lower.includes("samsung") || lower.includes("s25") || lower.includes("s25") || lower.includes("ultra")) return REAL_PRODUCT_DATABASE["Galaxy S24"];
+    if (lower.includes("samsung") || lower.includes("s24") || lower.includes("s25") || lower.includes("ultra")) return REAL_PRODUCT_DATABASE["Galaxy S24"];
     if (lower.includes("redmi")) return REAL_PRODUCT_DATABASE["Redmi Note"];
     if (lower.includes("asus") || lower.includes("tuf")) return REAL_PRODUCT_DATABASE["ASUS TUF Gaming"];
     if (lower.includes("dell")) return REAL_PRODUCT_DATABASE["Dell Inspiron"];
@@ -2090,7 +2116,6 @@ function syncAllCardsWithRealStores() {
         col.setAttribute('data-product-keywords', entry.productKeywords || '');
         col.setAttribute('data-main-cat', entry.mainCat || '');
 
-        // Sync updated Nov 5 Competition Expiry Timestamps & "Valid until" text across all 5 HTML pages
         if (entry.expiry) {
             const timerSpan = col.querySelector('[data-expiry]');
             if (timerSpan) timerSpan.setAttribute('data-expiry', entry.expiry);
@@ -2205,7 +2230,6 @@ function updateCountdowns() {
         const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const secs = Math.floor((diff % (1000 * 60)) / 1000);
 
-        // Products expiring on Nov 5 at 11:00 PM show as Ending Soon (< 24 Hours)
         if (days === 0 || timer.getAttribute('data-expiry') === '2026-11-05T23:00:00') {
             const totalHoursLeft = Math.floor(diff / (1000 * 60 * 60));
             timer.classList.add('ending-soon');
@@ -2218,12 +2242,14 @@ function updateCountdowns() {
 }
 
 // ==========================================================================
-// 9. SEARCH, FILTER & 8-HOT-DEALS CUSTOMER CATEGORY PRIORITY
+// 9. SEARCH, FILTER & AUTO-SCROLL TO HOT FLASH DEALS CATEGORY TAB ON SEARCH
 // ==========================================================================
+let searchScrollTimeout = null;
+
 function setupFiltersAndSorting() {
     const filterButtons = document.querySelectorAll('#dealsSection .filter-btn, .filter-bar-box .filter-btn');
     const dealsContainer = document.getElementById('dealsContainer');
-    const categoryShowcase = document.getElementById('categoryShowcaseSection');
+    const dealsSection = document.getElementById('dealsSection');
     const dealsSectionTitle = document.getElementById('dealsSectionTitle');
 
     if (!dealsContainer) return;
@@ -2328,7 +2354,14 @@ function setupFiltersAndSorting() {
         });
     }
 
-    function filterAndSortCards(triggeredBySearchInput = false) {
+    function scrollToHotFlashDealsSection() {
+        const targetEl = dealsSection || dealsContainer;
+        if (targetEl) {
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    function filterAndSortCards(triggeredBySearchInput = false, immediateScroll = false) {
         syncPopularTagUI();
 
         const prefCats = getCustomerPreferredCategories();
@@ -2353,6 +2386,7 @@ function setupFiltersAndSorting() {
         const escapedQuery = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const searchRegex = new RegExp('\\b' + escapedQuery, 'i');
 
+        // Auto-switch Category Tab under Hot Flash Deals Across Stores when searching (e.g. "shoe" -> Fashion (8))
         if (isHomePage && triggeredBySearchInput) {
             if (searchQuery !== '') {
                 const matchedCol = cols.find(col => {
@@ -2367,8 +2401,19 @@ function setupFiltersAndSorting() {
                         filterButtons.forEach(b => b.classList.remove('active'));
                         targetBtn.classList.add('active');
                     }
+
+                    // Auto-scroll to Hot Flash Deals Across Stores section so user sees the matched category & products!
+                    if (immediateScroll) {
+                        scrollToHotFlashDealsSection();
+                    } else {
+                        if (searchScrollTimeout) clearTimeout(searchScrollTimeout);
+                        searchScrollTimeout = setTimeout(() => {
+                            scrollToHotFlashDealsSection();
+                        }, 380);
+                    }
                 }
             } else {
+                if (searchScrollTimeout) clearTimeout(searchScrollTimeout);
                 const allBtn = document.querySelector('#dealsSection .filter-btn[data-filter="all"]');
                 if (allBtn) {
                     filterButtons.forEach(b => b.classList.remove('active'));
@@ -2383,15 +2428,8 @@ function setupFiltersAndSorting() {
         const sortBy = sortSelect ? sortSelect.value : 'default';
         const now = new Date().getTime();
 
-        if (isHomePage && categoryShowcase) {
-            if (searchQuery !== '') {
-                categoryShowcase.classList.add('d-none');
-            } else {
-                categoryShowcase.classList.remove('d-none');
-            }
-            if (dealsSectionTitle) {
-                dealsSectionTitle.innerText = 'Hot Flash Deals Across Stores';
-            }
+        if (isHomePage && dealsSectionTitle) {
+            dealsSectionTitle.innerText = 'Hot Flash Deals Across Stores';
         }
 
         cols.forEach(col => {
@@ -2486,7 +2524,7 @@ function setupFiltersAndSorting() {
         }
     }
 
-    window.triggerDealScoutFilterUpdate = () => filterAndSortCards(false);
+    window.triggerDealScoutFilterUpdate = () => filterAndSortCards(false, false);
 
     popularTagBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -2495,7 +2533,7 @@ function setupFiltersAndSorting() {
 
             if (searchInput.value.trim().toLowerCase() === clickedTag.toLowerCase()) {
                 searchInput.value = '';
-                filterAndSortCards(true);
+                filterAndSortCards(true, false);
                 return;
             }
 
@@ -2512,7 +2550,7 @@ function setupFiltersAndSorting() {
             }
 
             searchInput.value = clickedTag;
-            filterAndSortCards(true);
+            filterAndSortCards(true, true);
         });
     });
 
@@ -2520,7 +2558,7 @@ function setupFiltersAndSorting() {
         clearSearchBtn.addEventListener('click', () => {
             searchInput.value = '';
             searchInput.focus();
-            filterAndSortCards(true);
+            filterAndSortCards(true, false);
         });
     }
 
@@ -2533,29 +2571,41 @@ function setupFiltersAndSorting() {
             if (searchInput) searchInput.value = '';
             if (daysFilterSelect) daysFilterSelect.value = 'all';
             if (sortSelect) sortSelect.value = 'default';
-            filterAndSortCards(false);
+            filterAndSortCards(false, false);
         });
     }
 
     filterButtons.forEach(btn => {
         btn.addEventListener('click', () => {
+            // If user clicks "All Hot Deals" while search box has text, clear search box so all 8 Hot Deals appear
+            if (btn.getAttribute('data-filter') === 'all' && searchInput && searchInput.value.trim() !== '') {
+                searchInput.value = '';
+            }
             filterButtons.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            filterAndSortCards(false);
+            filterAndSortCards(false, false);
         });
     });
 
-    if (searchInput) searchInput.addEventListener('input', () => filterAndSortCards(true));
-    if (daysFilterSelect) daysFilterSelect.addEventListener('change', () => filterAndSortCards(false));
-    if (sortSelect) sortSelect.addEventListener('change', () => filterAndSortCards(false));
+    if (searchInput) {
+        searchInput.addEventListener('input', () => filterAndSortCards(true, false));
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                filterAndSortCards(true, true);
+            }
+        });
+    }
+    if (daysFilterSelect) daysFilterSelect.addEventListener('change', () => filterAndSortCards(false, false));
+    if (sortSelect) sortSelect.addEventListener('change', () => filterAndSortCards(false, false));
 
     const urlParams = new URLSearchParams(window.location.search);
     const initialQuery = urlParams.get('q');
     if (initialQuery && searchInput) {
         searchInput.value = initialQuery;
-        filterAndSortCards(true);
+        setTimeout(() => filterAndSortCards(true, true), 150);
     } else {
-        filterAndSortCards(false);
+        filterAndSortCards(false, false);
     }
 }
 
@@ -2747,7 +2797,6 @@ function buildProductPreviewModal() {
                             <h5 class="fw-bold mb-1" id="previewTitle">Product Title</h5>
                             <p class="text-muted small mb-2" id="previewStoreSub">Official Store Promotion</p>
 
-                            <!-- Blue Seasonal Discount Badge inside Preview Modal -->
                             <div id="previewSeasonBadgeWrap" class="d-none"></div>
 
                             <div class="d-flex align-items-baseline flex-wrap gap-2 mb-2 pb-2 border-bottom">
@@ -2888,7 +2937,6 @@ function openProductPreview(col, scrollToMap = false) {
     document.getElementById('previewTimerBadge').innerHTML = timerText;
     document.getElementById('previewDescription').innerText = catalogEntry ? catalogEntry.description : 'Verified physical outlet promotion in Yangon.';
 
-    // Show Seasonal Discount Badge inside Preview Modal if product belongs to a Seasonal Discount
     const previewSeasonWrap = document.getElementById('previewSeasonBadgeWrap');
     const seasonMatch = getSeasonBadgeForProduct(title);
     if (previewSeasonWrap) {
@@ -3112,7 +3160,7 @@ function setupCrossNavFooterAndDeepLinks() {
 
                 <div class="footer-bottom-bar d-flex flex-wrap justify-content-between align-items-center gap-2 text-secondary small">
                     <div>© 2026 <strong>DealScout</strong> • All 32 Verified Yangon Store Promotions</div>
-                    <div>Developed by Group 1 • GUSTO College Web Design Competition 2026</div>
+                    <div>© 2026 <strong>DealScout</strong> • All rights reserved.</div>
                 </div>
             </div>
         `;
