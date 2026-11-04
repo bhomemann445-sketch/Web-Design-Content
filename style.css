@@ -39,29 +39,63 @@
     --expired-card-bg: #111827;
 }
 
-html, body {
+html {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    scroll-behavior: smooth;
+}
+
+body {
     font-family: 'Plus Jakarta Sans', sans-serif;
     background-color: var(--bg-main);
     color: var(--text-dark);
-    overflow-x: hidden;
+    overflow-x: clip;
     width: 100%;
+    margin: 0;
+}
+
+body.auth-locked {
+    overflow: hidden !important;
+    height: 100vh !important;
+}
+
+/* Permanently hide the subtitle under Hot Flash Deals Across Stores */
+#dealsSectionSubtitle {
+    display: none !important;
 }
 
 /* ==========================================================================
-   GLASSMORPHISM STICKY NAVBAR & HERO BANNER ANIMATED GLOW ORBS
+   1. DEEP NAVY SUBTLE LIQUID GLASS STICKY NAVBAR & 3-LINE MENU DROPDOWN
    ========================================================================== */
 .navbar-dealscout {
-    background: rgba(30, 58, 138, 0.88) !important;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.18);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
-    transition: background-color 0.3s ease;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1030 !important;
+    background: linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.88) 0%,
+        rgba(23, 37, 84, 0.84) 50%,
+        rgba(15, 23, 42, 0.90) 100%
+    ) !important;
+    backdrop-filter: blur(18px) saturate(165%);
+    -webkit-backdrop-filter: blur(18px) saturate(165%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.14),
+        0 10px 28px -6px rgba(15, 23, 42, 0.32);
+    transition: all 0.3s ease;
 }
 
 [data-bs-theme="dark"] .navbar-dealscout {
-    background: rgba(15, 23, 42, 0.86) !important;
+    background: linear-gradient(
+        135deg,
+        rgba(11, 15, 25, 0.88) 0%,
+        rgba(15, 23, 42, 0.86) 50%,
+        rgba(11, 15, 25, 0.90) 100%
+    ) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.09),
+        0 10px 28px -6px rgba(0, 0, 0, 0.5);
 }
 
 .navbar-brand {
@@ -75,41 +109,104 @@ html, body {
 }
 
 .nav-link {
-    color: rgba(255, 255, 255, 0.85) !important;
+    color: rgba(255, 255, 255, 0.82) !important;
     font-weight: 600;
     transition: all 0.25s ease;
-    padding: 0.5rem 1rem !important;
+    padding: 0.45rem 0.95rem !important;
     border-radius: 10px;
+    border: 1px solid transparent;
+    font-size: 0.92rem;
+    cursor: pointer;
 }
 
 .nav-link:hover, .nav-link.active {
     color: #FFFFFF !important;
-    background-color: rgba(255, 255, 255, 0.16);
-    transform: translateY(-1px);
-}
-
-/* Theme Toggle Button */
-.btn-theme-toggle {
     background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+#themeToggleBtn {
+    display: none !important;
+}
+
+.navbar-dealscout .d-flex.align-items-center {
+    gap: 12px !important;
+}
+
+.navbar-dealscout [data-bs-target="#savingsDrawer"] {
+    order: 1;
+    margin-right: 4px;
+}
+
+.navbar-dealscout #navUnifiedMenuWrapper {
+    order: 2;
+}
+
+.btn-nav-menu-lines {
+    background: rgba(255, 255, 255, 0.11);
     color: #FFFFFF;
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
     border-radius: 10px;
-    padding: 8px 14px;
-    font-weight: 600;
+    width: 42px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
     transition: all 0.2s ease;
+    padding: 0;
 }
 
-.btn-theme-toggle:hover {
-    background: rgba(255, 255, 255, 0.25);
+.btn-nav-menu-lines:hover,
+.btn-nav-menu-lines:focus {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.35);
     color: #FFFFFF;
 }
 
-/* Hero Banner with Animated Floating Glow Orbs */
+.unified-nav-dropdown {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 16px !important;
+    padding: 8px !important;
+    min-width: 235px !important;
+    box-shadow: 0 18px 38px rgba(15, 23, 42, 0.28) !important;
+    margin-top: 10px !important;
+}
+
+.unified-nav-dropdown .dropdown-item {
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 9px 12px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.unified-nav-dropdown .dropdown-item:hover {
+    background-color: var(--store-tag-bg);
+    color: var(--store-tag-text);
+}
+
+.unified-nav-dropdown .dropdown-item.text-danger:hover {
+    background-color: rgba(220, 38, 38, 0.12);
+    color: #DC2626 !important;
+}
+
+/* ==========================================================================
+   2. 5-SLIDE HERO BANNER CAROUSEL (BLUE BUTTONS & 5-SECOND AUTO SLIDE)
+   ========================================================================== */
 .hero-banner {
     background: linear-gradient(135deg, #1E3A8A 0%, #172554 55%, #0F172A 100%);
     color: white;
     border-radius: 22px;
-    padding: 3rem 2.5rem;
+    padding: 2.5rem 2.25rem;
     position: relative;
     overflow: hidden;
     z-index: 1;
@@ -127,7 +224,7 @@ html, body {
     width: 340px;
     height: 340px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 90, 31, 0.38) 0%, rgba(255, 90, 31, 0) 70%);
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.32) 0%, rgba(59, 130, 246, 0) 70%);
     top: -120px;
     right: -60px;
     z-index: -1;
@@ -159,8 +256,445 @@ html, body {
     100% { transform: translate(50px, -30px) scale(1.18); }
 }
 
+.hero-slider-stage {
+    position: relative;
+    width: 100%;
+}
+
+.hero-slide-pane {
+    display: none;
+    min-height: 300px;
+    align-items: center;
+    animation: heroSlideFadeIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hero-slide-pane.active {
+    display: flex;
+}
+
+@keyframes heroSlideFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateX(18px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.seasonal-banner-img-frame {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.24);
+    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.35);
+    background: #0F172A;
+}
+
+.seasonal-banner-img-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s ease;
+}
+
+.seasonal-banner-img-frame:hover img {
+    transform: scale(1.04);
+}
+
+/* Blue Hero Banner CTA Button (Replaces Orange on Banner Slides) */
+.btn-hero-blue {
+    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+    color: #FFFFFF !important;
+    border: 1px solid rgba(147, 197, 253, 0.4);
+    border-radius: 12px;
+    padding: 10px 22px;
+    font-weight: 700;
+    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.42);
+    transition: all 0.25s ease;
+}
+
+.btn-hero-blue:hover {
+    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+    color: #FFFFFF !important;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(59, 130, 246, 0.55);
+}
+
+/* Hero Slider Dots Navigation Bar (Blue Active Pill) */
+.hero-slider-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 1.35rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.hero-slide-dot {
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.hero-slide-dot:hover {
+    background: rgba(255, 255, 255, 0.22);
+    color: #FFFFFF;
+}
+
+.hero-slide-dot.active {
+    background: #2563EB;
+    color: #FFFFFF;
+    border-color: #60A5FA;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.5);
+}
+
 /* ==========================================================================
-   UPGRADED SINGLE SEARCH BOX & POPULAR TAGS IN HERO BANNER
+   3. SEASONAL DISCOUNT SECTION (BLUE FILTER BUTTONS MATCHING TOP BUTTONS)
+   ========================================================================== */
+.seasonal-section-wrapper {
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.seasonal-filter-btn {
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-dark);
+    border-radius: 50px;
+    padding: 8px 18px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.22s ease;
+    white-space: nowrap;
+}
+
+.seasonal-filter-btn:hover,
+.seasonal-filter-btn.active {
+    background-color: #1E3A8A;
+    color: #FFFFFF;
+    border-color: #1E3A8A;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.25);
+}
+
+[data-bs-theme="dark"] .seasonal-filter-btn:hover,
+[data-bs-theme="dark"] .seasonal-filter-btn.active {
+    background-color: #3B82F6;
+    color: #FFFFFF;
+    border-color: #3B82F6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+}
+
+#seasonalResultCounter {
+    white-space: normal !important;
+    text-align: left;
+    line-height: 1.45;
+    max-width: 100%;
+}
+
+/* Relocated Seasonal Badge inside Card Body */
+.season-body-badge-wrap {
+    margin-top: -6px;
+    margin-bottom: 12px;
+}
+
+.badge-season-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+    color: #FFFFFF;
+    font-size: 0.73rem;
+    font-weight: 700;
+    padding: 4px 11px;
+    border-radius: 6px;
+    letter-spacing: 0.2px;
+    box-shadow: 0 3px 8px rgba(37, 99, 235, 0.22);
+}
+
+[data-bs-theme="dark"] .badge-season-tag {
+    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+    border: 1px solid rgba(147, 197, 253, 0.25);
+}
+
+/* ==========================================================================
+   4. FULL-SCREEN BLURRED LOGIN GATE & MULTI-CATEGORY ONBOARDING OVERLAY
+   ========================================================================== */
+#authGateOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2050;
+    background: rgba(15, 23, 42, 0.62);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.auth-glass-card {
+    background: var(--bg-card);
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 22px;
+    width: 100%;
+    max-width: 480px;
+    padding: 2rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+    animation: dealCardFadeUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.auth-role-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: var(--bg-main);
+    padding: 6px;
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 1.25rem;
+}
+
+.auth-role-btn {
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 10px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.auth-role-btn.active {
+    background: var(--primary-navy);
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.25);
+}
+
+.btn-eye-input {
+    border: 1px solid var(--border-color);
+    border-left: none;
+    background: var(--bg-main);
+    color: var(--text-muted);
+    padding: 0 12px;
+    cursor: pointer;
+}
+
+.btn-eye-input:hover {
+    color: var(--text-dark);
+}
+
+.table-pass-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.85rem;
+}
+
+.btn-table-eye {
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    padding: 0 2px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+.btn-table-eye:hover {
+    color: var(--accent-orange);
+}
+
+.pref-cat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.pref-cat-item {
+    border: 2px solid var(--border-color);
+    background: var(--bg-main);
+    border-radius: 14px;
+    padding: 14px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    user-select: none;
+}
+
+.pref-cat-item:hover {
+    border-color: var(--primary-navy);
+    transform: translateY(-2px);
+}
+
+.pref-cat-item.selected {
+    border-color: var(--accent-orange);
+    background: rgba(255, 90, 31, 0.08);
+    box-shadow: 0 8px 20px rgba(255, 90, 31, 0.14);
+}
+
+.pref-cat-check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--border-color);
+    color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.pref-cat-item.selected .pref-cat-check {
+    background: var(--accent-orange);
+    color: #FFFFFF;
+}
+
+.personalized-pref-bar {
+    background: linear-gradient(90deg, rgba(30, 58, 138, 0.09) 0%, rgba(59, 130, 246, 0.09) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 10px 16px;
+}
+
+/* ==========================================================================
+   5. BAR CHART & ADMIN ANALYTICS DASHBOARD STYLING
+   ========================================================================== */
+.analytics-panel-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+}
+
+.kpi-stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+}
+
+.kpi-icon-box {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.month-switch-btn {
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-dark);
+    font-weight: 700;
+    padding: 8px 20px;
+    border-radius: 50px;
+    transition: all 0.2s ease;
+}
+
+.month-switch-btn.active {
+    background: var(--primary-navy);
+    color: #FFFFFF;
+    border-color: var(--primary-navy);
+    box-shadow: 0 4px 14px rgba(30, 58, 138, 0.3);
+}
+
+[data-bs-theme="dark"] .month-switch-btn.active {
+    background: #3B82F6;
+    border-color: #3B82F6;
+}
+
+.v-chart-stage {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    height: 230px;
+    padding: 24px 12px 12px;
+    border-bottom: 2px solid var(--border-color);
+    gap: 14px;
+}
+
+.v-bar-col {
+    flex: 1;
+    max-width: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+}
+
+.v-bar-fill {
+    width: 100%;
+    max-width: 56px;
+    border-radius: 10px 10px 0 0;
+    transition: height 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+    min-height: 12px;
+}
+
+.v-bar-val {
+    font-weight: 800;
+    font-size: 0.86rem;
+    margin-bottom: 6px;
+    color: var(--text-dark);
+}
+
+.h-bar-row {
+    margin-bottom: 14px;
+}
+
+.h-bar-track {
+    width: 100%;
+    height: 14px;
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    overflow: hidden;
+}
+
+.h-bar-fill {
+    height: 100%;
+    border-radius: 50px;
+    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ==========================================================================
+   6. SEARCH BOX, CARDS & PREVIEW MODAL
    ========================================================================== */
 .finder-box {
     background: rgba(255, 255, 255, 0.96);
@@ -175,10 +709,6 @@ html, body {
 [data-bs-theme="dark"] .finder-box {
     background: rgba(30, 41, 59, 0.92);
     border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.finder-box:focus-within {
-    transform: translateY(-2px);
 }
 
 .modern-search-input-wrap {
@@ -214,9 +744,9 @@ html, body {
 }
 
 .modern-search-input-wrap #searchInput:focus {
-    border-color: var(--accent-orange) !important;
+    border-color: #2563EB !important;
     background-color: var(--bg-card) !important;
-    box-shadow: 0 0 0 4px rgba(255, 90, 31, 0.16) !important;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.16) !important;
 }
 
 .search-clear-btn {
@@ -238,11 +768,10 @@ html, body {
 }
 
 .search-clear-btn:hover {
-    background: var(--accent-orange);
+    background: #2563EB;
     color: #FFFFFF;
 }
 
-/* Popular Quick Search Tags */
 .popular-tags-row {
     display: flex;
     flex-wrap: wrap;
@@ -272,16 +801,16 @@ html, body {
 
 .popular-tag-btn:hover,
 .popular-tag-btn.active {
-    background: var(--accent-orange);
+    background: #2563EB;
     color: #FFFFFF;
-    border-color: var(--accent-orange);
+    border-color: #2563EB;
     transform: translateY(-1px);
 }
 
 .flash-timer-box {
-    background: rgba(255, 90, 31, 0.2);
+    background: rgba(37, 99, 235, 0.22);
     backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 90, 31, 0.65);
+    border: 1px solid rgba(96, 165, 250, 0.55);
     border-radius: 12px;
     padding: 12px 20px;
     display: inline-flex;
@@ -289,12 +818,9 @@ html, body {
     align-items: center;
     gap: 8px 12px;
     max-width: 100%;
-    box-shadow: 0 8px 20px rgba(255, 90, 31, 0.15);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
 }
 
-/* ==========================================================================
-   LOWER CONTROLS BAR (COUNTER + DAYS LEFT DROPDOWN + SORT BY DROPDOWN)
-   ========================================================================== */
 .deals-ResultAndControls-bar {
     display: flex;
     flex-wrap: wrap;
@@ -325,16 +851,8 @@ html, body {
     align-items: center;
 }
 
-.control-select-icon {
-    position: absolute;
-    left: 12px;
-    font-size: 0.92rem;
-    pointer-events: none;
-    z-index: 1;
-}
-
 .deal-control-select {
-    padding-left: 34px !important;
+    padding-left: 16px !important;
     padding-right: 32px !important;
     padding-top: 7px !important;
     padding-bottom: 7px !important;
@@ -347,23 +865,9 @@ html, body {
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
     transition: all 0.2s ease;
-    min-width: 185px;
+    min-width: 175px;
 }
 
-.deal-control-select:hover,
-.deal-control-select:focus {
-    border-color: var(--primary-navy) !important;
-    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.12) !important;
-}
-
-[data-bs-theme="dark"] .deal-control-select:hover,
-[data-bs-theme="dark"] .deal-control-select:focus {
-    border-color: #60A5FA !important;
-}
-
-/* ==========================================================================
-   STAGGERED SCROLL & FILTER REVEAL ANIMATIONS
-   ========================================================================== */
 @keyframes dealCardFadeUp {
     0% {
         opacity: 0;
@@ -422,7 +926,6 @@ html, body {
     transform: scale(1.08) rotate(-4deg);
 }
 
-/* Filter Bar & Buttons */
 .filter-bar-box {
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -453,10 +956,9 @@ html, body {
     background-color: #3B82F6;
     color: white;
     border-color: #3B82F6;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
 }
 
-/* Product Deal Cards */
 .deal-card {
     background: var(--bg-card);
     border-radius: 16px;
@@ -499,7 +1001,6 @@ html, body {
     transform: scale(1.07);
 }
 
-/* Quick Preview Floating Button on Card Image */
 .btn-quick-preview-overlay {
     position: absolute;
     top: 12px;
@@ -555,7 +1056,6 @@ html, body {
     z-index: 2;
 }
 
-/* Logic 5: Urgent Ending Soon (< 24 Hours) Alert */
 .badge-timer.ending-soon {
     background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
     color: #FFFFFF;
@@ -569,9 +1069,6 @@ html, body {
     border: 1px solid #64748B;
 }
 
-/* ==========================================================================
-   EXPIRED PRODUCT BLACK & WHITE (MONOCHROME) STYLING ON CARDS ONLY
-   ========================================================================== */
 .deal-card.deal-expired {
     filter: grayscale(100%) contrast(0.92);
     background-color: var(--expired-card-bg);
@@ -616,8 +1113,9 @@ html, body {
 
 .deal-card.deal-expired .badge-discount,
 .deal-card.deal-expired .store-tag,
-.deal-card.deal-expired .savings-pill {
-    background-color: #475569 !important;
+.deal-card.deal-expired .savings-pill,
+.deal-card.deal-expired .badge-season-tag {
+    background: #475569 !important;
     color: #F1F5F9 !important;
     box-shadow: none !important;
 }
@@ -627,7 +1125,6 @@ html, body {
     text-decoration: line-through;
 }
 
-/* Card Store & Price Elements */
 .store-tag {
     font-size: 0.75rem;
     font-weight: 700;
@@ -698,9 +1195,7 @@ html, body {
     border: 1px solid var(--border-color);
 }
 
-/* ==========================================================================
-   SMOOTH SPRING MODAL ANIMATION & BLURRED BACKDROP
-   ========================================================================== */
+/* SMOOTH SPRING MODAL ANIMATION & BLURRED BACKDROP */
 .modal-backdrop.show {
     opacity: 1 !important;
     background-color: rgba(15, 23, 42, 0.58) !important;
@@ -778,7 +1273,6 @@ html, body {
     padding: 10px;
 }
 
-/* Circular Color Swatches */
 .color-swatch-list {
     display: flex;
     flex-wrap: wrap;
@@ -806,7 +1300,6 @@ html, body {
     outline-offset: 2px;
 }
 
-/* Informational Size Tags */
 .size-info-tag {
     display: inline-block;
     background: var(--bg-main);
@@ -818,7 +1311,6 @@ html, body {
     font-weight: 600;
 }
 
-/* Store Availability & Expanded Google Map Box */
 .store-availability-box {
     background: var(--bg-main);
     border: 1px solid var(--border-color);
@@ -836,14 +1328,16 @@ html, body {
 }
 
 /* ==========================================================================
-   RESPONSIVE MEDIA QUERIES (ALL DEVICES: LAPTOP, TABLET, MOBILE)
+   7. RESPONSIVE MEDIA QUERIES (ALL DEVICES: DESKTOP, TABLET, MOBILE)
    ========================================================================== */
 @media (max-width: 991.98px) {
     .navbar-collapse {
-        background: rgba(15, 23, 42, 0.25);
+        background: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
         margin-top: 12px;
         padding: 16px;
-        border-radius: 12px;
+        border-radius: 14px;
         border: 1px solid rgba(255, 255, 255, 0.12);
     }
 
@@ -853,17 +1347,19 @@ html, body {
 
     .navbar-collapse .d-flex {
         width: 100%;
-        justify-content: flex-start;
+        justify-content: space-between;
+        flex-wrap: wrap;
         padding-top: 10px;
         border-top: 1px solid rgba(255, 255, 255, 0.15);
     }
 
-    .navbar-collapse .btn-accent {
-        margin-right: 12px;
+    .hero-banner {
+        padding: 2rem 1.5rem;
     }
 
-    .hero-banner {
-        padding: 2.25rem 1.75rem;
+    .seasonal-banner-img-frame {
+        height: 220px;
+        margin-top: 10px;
     }
 
     #productPreviewModal .modal-dialog {
@@ -882,19 +1378,35 @@ html, body {
 
 @media (max-width: 767.98px) {
     .hero-banner {
-        padding: 1.5rem 1.25rem !important;
+        padding: 1.35rem 1.15rem !important;
         border-radius: 16px;
     }
 
     .hero-banner h1.display-5,
     .hero-banner h1.display-6 {
-        font-size: 1.65rem;
+        font-size: 1.5rem;
         line-height: 1.3;
     }
 
     .hero-banner p.lead {
-        font-size: 0.95rem;
-        margin-bottom: 1.25rem !important;
+        font-size: 0.9rem;
+        margin-bottom: 1rem !important;
+    }
+
+    .seasonal-banner-img-frame {
+        height: 185px;
+        border-radius: 14px;
+    }
+
+    .hero-slider-nav {
+        gap: 6px;
+        margin-top: 1rem;
+        padding-top: 0.75rem;
+    }
+
+    .hero-slide-dot {
+        font-size: 0.7rem;
+        padding: 4px 10px;
     }
 
     .flash-timer-box {
@@ -953,6 +1465,7 @@ html, body {
     }
 
     #dealsSection .d-flex.flex-wrap.gap-2,
+    #seasonalDiscountSection .d-flex.flex-wrap.gap-2,
     .filter-bar-box .d-flex.flex-wrap.gap-2 {
         flex-wrap: nowrap !important;
         overflow-x: auto;
@@ -963,29 +1476,22 @@ html, body {
     }
 
     #dealsSection .d-flex.flex-wrap.gap-2::-webkit-scrollbar,
+    #seasonalDiscountSection .d-flex.flex-wrap.gap-2::-webkit-scrollbar,
     .filter-bar-box .d-flex.flex-wrap.gap-2::-webkit-scrollbar {
         display: none;
     }
 
-    .filter-btn {
+    .filter-btn,
+    .seasonal-filter-btn {
         padding: 6px 14px;
         font-size: 0.82rem;
         flex: 0 0 auto;
     }
 
-    h3.fw-bold {
-        font-size: 1.35rem;
+    .auth-glass-card {
+        padding: 1.35rem;
     }
 
-    .deal-img-wrapper {
-        height: 195px;
-    }
-
-    .price-new {
-        font-size: 1.12rem;
-    }
-
-    /* Mobile Responsive Modal */
     #productPreviewModal .modal-dialog {
         margin: 6px auto;
         width: calc(100% - 12px);
@@ -1010,76 +1516,148 @@ html, body {
         border-radius: 10px;
     }
 
-    #previewTitle {
-        font-size: 1.05rem;
-        line-height: 1.25;
-    }
-
-    #previewPriceNew {
-        font-size: 1.2rem !important;
-    }
-
-    .color-swatch {
-        width: 28px;
-        height: 28px;
-    }
-
-    #previewSaveBtn {
-        font-size: 0.88rem;
-        padding: 8px 12px;
-    }
-
-    .store-availability-box {
-        padding: 8px 10px;
-    }
-
     .store-map-frame {
         height: 185px;
     }
 }
 
-@media (max-width: 575.98px) {
-    .container {
-        padding-left: 14px;
-        padding-right: 14px;
-    }
+/* ==========================================================================
+   CROSS-NAVIGATION MEGA FOOTER & SOCIAL MEDIA ICONS
+   ========================================================================== */
+.dealscout-mega-footer {
+    background: linear-gradient(135deg, #0F172A 0%, #172554 55%, #0B0F19 100%) !important;
+    color: #F8FAFC;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    position: relative;
+    overflow: hidden;
+}
 
-    .navbar-brand.fs-3 {
-        font-size: 1.4rem !important;
-    }
+.footer-brand-desc {
+    color: #94A3B8;
+    font-size: 0.86rem;
+    line-height: 1.55;
+    max-width: 340px;
+}
 
-    .navbar-collapse .d-flex {
-        flex-direction: row;
-        gap: 10px !important;
-    }
+/* Social Media Circular Buttons */
+.footer-social-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 1rem;
+}
 
-    .navbar-collapse .btn-theme-toggle {
-        flex: 0 0 auto;
-    }
+.footer-social-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
 
-    .navbar-collapse .btn-accent {
-        flex: 1 1 auto;
-        text-align: center;
-    }
+.footer-social-btn:hover {
+    background: #2563EB;
+    border-color: #60A5FA;
+    color: #FFFFFF;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.45);
+}
 
-    .deal-card .mt-auto .d-flex.justify-content-between {
-        flex-wrap: wrap;
-        gap: 8px;
-    }
+/* Big Main Category Nav Button in Footer */
+.footer-main-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #FFFFFF !important;
+    font-weight: 700;
+    font-size: 0.92rem;
+    padding: 9px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    margin-bottom: 12px;
+    transition: all 0.22s ease;
+}
 
-    .offcanvas-end {
-        width: 100% !important;
-        max-width: 100vw;
-    }
+.footer-main-nav-btn:hover {
+    background: #2563EB;
+    border-color: #60A5FA;
+    color: #FFFFFF !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+}
 
-    #dealScoutToastContainer {
-        left: 0;
-        right: 0;
-        width: 100%;
-        padding: 12px !important;
-    }
+/* Sub-Category List Links under Main Footer Button */
+.footer-subnav-list {
+    list-style: none;
+    padding-left: 4px;
+    margin-bottom: 0;
+}
 
-    #dealScoutToastContainer .toast {
-        width: 100%;
-    }
+.footer-subnav-list li {
+    margin-bottom: 7px;
+}
+
+.footer-subnav-link {
+    color: #CBD5E1;
+    font-size: 0.84rem;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.footer-subnav-link::before {
+    content: "›";
+    color: #60A5FA;
+    font-weight: 800;
+    font-size: 1rem;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+.footer-subnav-link:hover {
+    color: #FFFFFF;
+    transform: translateX(4px);
+}
+
+.footer-subnav-link:hover::before {
+    color: var(--accent-orange);
+    transform: translateX(2px);
+}
+
+.footer-bottom-bar {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1.25rem;
+    margin-top: 2rem;
+}
+
+/* ==========================================================================
+   FINAL FIXES: EQUAL ADMIN KPI CARDS & PREVIEW MODAL SEASONAL BADGE
+   ========================================================================== */
+.kpi-stat-card {
+    height: 100%;
+    min-height: 92px;
+}
+
+.kpi-stat-card .text-muted.small {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#previewSeasonBadgeWrap {
+    margin-bottom: 10px;
 }
