@@ -1,15 +1,158 @@
-// app.js - DealScout Final Logic (Single Top Search Box + Popular Tags + Method A Days Left Dropdown & Sort Dropdown)
+// app.js - DealScout Final Competition Version (Nov 5 Timers + Preview Seasonal Badge + Encrypted Customer Passwords + Mega Footer)
 
 let savedDeals = JSON.parse(localStorage.getItem('dealScoutSaved')) || [];
 const recoloredImageCache = {};
 
 // ==========================================================================
-// MASTER CATALOG: 32 PRODUCTS WITH PRODUCT-ONLY TAGS, STORES & MAP LINKS
+// 0. PREDEFINED ADMIN ACCOUNTS (2 ADMINS) & 21 CUSTOMERS ANALYTICS DATA
+// ==========================================================================
+const ADMIN_ACCOUNTS = [
+    { username: "admin1", password: "admin123" },
+    { username: "admin2", password: "admin456" }
+];
+
+const DEFAULT_ANALYTICS_DATA = {
+    october2026: {
+        totalSaveDeals: 44,
+        customers: [
+            { email: "kyawzayar99@gmail.com", password: "kz2026!ygn", loginCount: 3, saveCount: 4, lastLogin: "2026-10-31 08:42 PM" },
+            { email: "suhtet.ygn@gmail.com", password: "suhtet8899", loginCount: 2, saveCount: 3, lastLogin: "2026-10-30 04:15 PM" },
+            { email: "thura.aung@gmail.com", password: "thura4567", loginCount: 1, saveCount: 2, lastLogin: "2026-10-29 11:30 AM" },
+            { email: "maythu.beauty@gmail.com", password: "maythu2026", loginCount: 3, saveCount: 3, lastLogin: "2026-10-28 06:50 PM" },
+            { email: "linnhtet.it@gmail.com", password: "linn9090#", loginCount: 2, saveCount: 2, lastLogin: "2026-10-27 09:20 AM" },
+            { email: "aungmin.khant@gmail.com", password: "amk778899", loginCount: 1, saveCount: 1, lastLogin: "2026-10-26 03:12 PM" },
+            { email: "hninwai.lwin@gmail.com", password: "hninwai123", loginCount: 3, saveCount: 4, lastLogin: "2026-10-25 07:05 PM" },
+            { email: "minkhant.dev@gmail.com", password: "mkdev2026!", loginCount: 2, saveCount: 2, lastLogin: "2026-10-24 01:40 PM" },
+            { email: "ei.mon.kyaw@gmail.com", password: "eimon5566", loginCount: 1, saveCount: 1, lastLogin: "2026-10-23 10:15 AM" },
+            { email: "zawye.htet@gmail.com", password: "zawye3344", loginCount: 3, saveCount: 3, lastLogin: "2026-10-22 05:25 PM" },
+            { email: "phyo.thiri@gmail.com", password: "phyo9900!", loginCount: 2, saveCount: 2, lastLogin: "2026-10-21 08:10 PM" },
+            { email: "kaung.myat@gmail.com", password: "kaung1122", loginCount: 1, saveCount: 1, lastLogin: "2026-10-20 02:55 PM" },
+            { email: "myat.noe.wai@gmail.com", password: "myatnoe77", loginCount: 2, saveCount: 3, lastLogin: "2026-10-19 06:30 PM" },
+            { email: "waiyan.oo@gmail.com", password: "waiyan888", loginCount: 3, saveCount: 2, lastLogin: "2026-10-18 11:45 AM" },
+            { email: "shwe.yamin@gmail.com", password: "shwe2026@", loginCount: 1, saveCount: 2, lastLogin: "2026-10-16 04:05 PM" },
+            { email: "hein.htet.z@gmail.com", password: "heinhtet9", loginCount: 2, saveCount: 1, lastLogin: "2026-10-14 09:50 AM" },
+            { email: "yu.ya.mon@gmail.com", password: "yuyamon55", loginCount: 3, saveCount: 3, lastLogin: "2026-10-12 07:20 PM" },
+            { email: "nyan.linn@gmail.com", password: "nyanlin44", loginCount: 1, saveCount: 1, lastLogin: "2026-10-10 03:35 PM" },
+            { email: "chit.su.wai@gmail.com", password: "chitsu321", loginCount: 2, saveCount: 2, lastLogin: "2026-10-08 01:15 PM" },
+            { email: "paing.soe@gmail.com", password: "paing6543", loginCount: 1, saveCount: 1, lastLogin: "2026-10-05 10:40 AM" },
+            { email: "khin.myat.noe@gmail.com", password: "khinmyat1", loginCount: 2, saveCount: 1, lastLogin: "2026-10-02 05:18 PM" }
+        ],
+        admins: [
+            { username: "admin1", password: "admin123", loginCount: 28, lastLogin: "2026-10-31 09:10 PM" },
+            { username: "admin2", password: "admin456", loginCount: 22, lastLogin: "2026-10-30 03:40 PM" }
+        ]
+    },
+    november2026: {
+        totalSaveDeals: 0,
+        customers: [],
+        admins: []
+    }
+};
+
+function getAnalyticsData() {
+    const raw = localStorage.getItem('dealScoutAnalyticsV2');
+    if (!raw) {
+        localStorage.setItem('dealScoutAnalyticsV2', JSON.stringify(DEFAULT_ANALYTICS_DATA));
+        return JSON.parse(JSON.stringify(DEFAULT_ANALYTICS_DATA));
+    }
+    return JSON.parse(raw);
+}
+
+function saveAnalyticsData(data) {
+    localStorage.setItem('dealScoutAnalyticsV2', JSON.stringify(data));
+}
+
+function getCurrentSession() {
+    const raw = localStorage.getItem('dealScoutActiveSession');
+    return raw ? JSON.parse(raw) : null;
+}
+
+function getCustomerPreferredCategories() {
+    const session = getCurrentSession();
+    return (session && session.role === 'customer' && Array.isArray(session.preferredCategories))
+        ? session.preferredCategories
+        : [];
+}
+
+function formatNowDateTime() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    let hrs = now.getHours();
+    const mins = String(now.getMinutes()).padStart(2, '0');
+    const secs = String(now.getSeconds()).padStart(2, '0');
+    const ampm = hrs >= 12 ? 'PM' : 'AM';
+    hrs = hrs % 12 || 12;
+    return `${y}-${m}-${d} ${String(hrs).padStart(2, '0')}:${mins}:${secs} ${ampm}`;
+}
+
+function recordCustomerLogin(email, password) {
+    const data = getAnalyticsData();
+    const nowStr = formatNowDateTime();
+    const lowerEmail = email.toLowerCase();
+    let existing = data.november2026.customers.find(c => c.email.toLowerCase() === lowerEmail);
+    if (existing) {
+        existing.loginCount += 1;
+        existing.password = password;
+        existing.lastLogin = nowStr;
+    } else {
+        data.november2026.customers.unshift({
+            email: lowerEmail,
+            password: password,
+            loginCount: 1,
+            saveCount: 0,
+            lastLogin: nowStr
+        });
+    }
+    saveAnalyticsData(data);
+}
+
+function recordAdminLogin(username, password) {
+    const data = getAnalyticsData();
+    const nowStr = formatNowDateTime();
+    let existing = data.november2026.admins.find(a => a.username.toLowerCase() === username.toLowerCase());
+    if (existing) {
+        existing.loginCount += 1;
+        existing.password = password;
+        existing.lastLogin = nowStr;
+    } else {
+        data.november2026.admins.unshift({
+            username: username,
+            password: password,
+            loginCount: 1,
+            lastLogin: nowStr
+        });
+    }
+    saveAnalyticsData(data);
+}
+
+function incrementCustomerSaveCount() {
+    const session = getCurrentSession();
+    const data = getAnalyticsData();
+    data.november2026.totalSaveDeals = (data.november2026.totalSaveDeals || 0) + 1;
+
+    if (session && session.role === 'customer') {
+        const cust = data.november2026.customers.find(c => c.email.toLowerCase() === session.identifier.toLowerCase());
+        if (cust) {
+            cust.saveCount = (cust.saveCount || 0) + 1;
+        }
+    }
+    saveAnalyticsData(data);
+}
+
+// ==========================================================================
+// 1. MASTER CATALOG: 32 PRODUCTS WITH NOV 5 COMPETITION EXPIRY TIMERS
+//    (Covers <24h [Nov 5 11PM], Up to 3d, Up to 5d, Up to 7d, and Expired)
+//    (All 8 Hot Deals are 100% Active - Zero Expired in Hot Deals!)
 // ==========================================================================
 const REAL_PRODUCT_DATABASE = {
     // ---------------- FASHION (1 - 8) ----------------
     "Nike Air Zoom": {
         exactTitle: "Nike Free RN Running Sneakers",
+        mainCat: "fashion",
+        expiry: "2026-11-07T22:00:00",
+        validText: "Valid until: Nov 7, 2026",
         productKeywords: "shoe shoes sneaker sneakers footwear running nike",
         mainImg: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=80",
         store: "Light-Sneakers Shop",
@@ -26,6 +169,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Adidas": {
         exactTitle: "Adidas EQT Bask ADV Sneakers",
+        mainCat: "fashion",
+        expiry: "2026-11-09T21:00:00",
+        validText: "Valid until: Nov 9, 2026",
         productKeywords: "shoe shoes sneaker sneakers footwear adidas eqt",
         mainImg: "https://images.unsplash.com/photo-1518002171953-a080ee817e1f?auto=format&fit=crop&w=700&q=80",
         store: "Orchid Fashion Boutique",
@@ -39,6 +185,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Linen Casual Shirt": {
         exactTitle: "Cotton Casual Button-Down Shirt",
+        mainCat: "fashion",
+        expiry: "2026-11-05T23:00:00",
+        validText: "Valid until: Nov 5, 2026",
         productKeywords: "clothing clothes shirt shirts cotton casual top apparel",
         mainImg: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=700&q=80",
         store: "Fashmob",
@@ -55,6 +204,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Denim Jacket": {
         exactTitle: "Classic Fit Denim Jacket",
+        mainCat: "fashion",
+        expiry: "2026-11-11T22:00:00",
+        validText: "Valid until: Nov 11, 2026",
         productKeywords: "clothing clothes jacket jackets denim coat outerwear apparel",
         mainImg: "https://images.unsplash.com/photo-1551537482-f2075a1d41f2?auto=format&fit=crop&w=700&q=80",
         store: "Nang Closet",
@@ -68,6 +220,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Crossbody Bag": {
         exactTitle: "Classic Leather Crossbody Bag",
+        mainCat: "fashion",
+        expiry: "2026-11-08T20:00:00",
+        validText: "Valid until: Nov 8, 2026",
         productKeywords: "bag bags handbag leather crossbody purse",
         mainImg: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=700&q=80",
         store: "The Classy Branded Collection",
@@ -81,6 +236,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Everyday Tote Bag": {
         exactTitle: "Structured Everyday Tote Bag",
+        mainCat: "fashion",
+        expiry: "2026-11-01T11:00:00",
+        validText: "Valid until: Nov 1, 2026",
         productKeywords: "bag bags tote handbag shoulder purse",
         mainImg: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=700&q=80",
         store: "MSTY Branded Bags",
@@ -94,6 +252,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Pendant Necklace": {
         exactTitle: "18K Gold Layered Pendant Necklace",
+        mainCat: "fashion",
+        expiry: "2026-11-05T23:00:00",
+        validText: "Valid until: Nov 5, 2026",
         productKeywords: "jewelry necklace pendant gold chain accessory",
         mainImg: "https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&w=700&q=80",
         store: "Fancy House Jewelry",
@@ -107,6 +268,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Aviator Shades": {
         exactTitle: "Retro Round Frame UV400 Sunglasses",
+        mainCat: "fashion",
+        expiry: "2026-11-12T20:00:00",
+        validText: "Valid until: Nov 12, 2026",
         productKeywords: "sunglasses shades eyewear glasses uv400",
         mainImg: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=700&q=80",
         store: "Grand Optics",
@@ -122,6 +286,9 @@ const REAL_PRODUCT_DATABASE = {
     // ---------------- ELECTRONICS (9 - 16) ----------------
     "Galaxy S24": {
         exactTitle: "Samsung Galaxy S25 Ultra 5G (256GB)",
+        mainCat: "electronics",
+        expiry: "2026-11-08T21:00:00",
+        validText: "Valid until: Nov 8, 2026",
         productKeywords: "phone phones smartphone mobile samsung galaxy s25 ultra 5g",
         mainImg: "https://media.extra.com/s/aurora/100506854_800/SAMSUNG-Galaxy-S26-Ultra%2C-5G%2C-256-GB%2C-Black?locale=en-GB,en-*,*&$Listing-Product-2x$",
         imgFit: "contain",
@@ -147,6 +314,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Redmi Note": {
         exactTitle: "Redmi Note 14 Pro 5G",
+        mainCat: "electronics",
+        expiry: "2026-11-05T23:00:00",
+        validText: "Valid until: Nov 5, 2026",
         productKeywords: "phone phones smartphone mobile xiaomi redmi note 14 pro 5g",
         mainImg: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQish_5Z_wjHWWXAEHaFngCoHXGI5Tsegt_9TX6HOlY03MUdDMTGIilswM&s=10",
         imgFit: "contain",
@@ -172,6 +342,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "ASUS TUF Gaming": {
         exactTitle: "ASUS TUF Gaming F15 (RTX 4060)",
+        mainCat: "electronics",
+        expiry: "2026-11-10T22:00:00",
+        validText: "Valid until: Nov 10, 2026",
         productKeywords: "laptop laptops notebook computer gaming asus tuf f15 rtx",
         mainImg: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=700&q=80",
         store: "MTC-Computer Sales & Services",
@@ -185,6 +358,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Dell Inspiron": {
         exactTitle: "Dell Inspiron 15 Core i7 Laptop",
+        mainCat: "electronics",
+        expiry: "2026-11-02T14:00:00",
+        validText: "Valid until: Nov 2, 2026",
         productKeywords: "laptop laptops notebook computer dell inspiron core i7",
         mainImg: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=700&q=80",
         store: "IT Kingdom",
@@ -198,6 +374,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "iPad Air": {
         exactTitle: "Apple iPad Air Wi-Fi (128GB)",
+        mainCat: "electronics",
+        expiry: "2026-11-11T21:00:00",
+        validText: "Valid until: Nov 11, 2026",
         productKeywords: "tablet tablets ipad apple air wifi",
         mainImg: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=700&q=80",
         store: "UNiQUE IT & Mobile Center 3",
@@ -211,6 +390,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Sony": {
         exactTitle: "Sony Wireless Noise Canceling Headphones",
+        mainCat: "electronics",
+        expiry: "2026-11-09T20:00:00",
+        validText: "Valid until: Nov 9, 2026",
         productKeywords: "headphone headphones headset audio wireless sony",
         mainImg: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=700&q=80",
         store: "REMAX Brand Shop Seikanthar",
@@ -224,6 +406,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "JBL Pure Bass": {
         exactTitle: "Wireless Pure Bass On-Ear Headset",
+        mainCat: "electronics",
+        expiry: "2026-11-05T23:00:00",
+        validText: "Valid until: Nov 5, 2026",
         productKeywords: "headphone headphones headset audio wireless bass",
         mainImg: "https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=700&q=80",
         store: "Gadgets Corne",
@@ -237,6 +422,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Canon EOS": {
         exactTitle: "Canon EOS Digital Camera & Lens Kit",
+        mainCat: "electronics",
+        expiry: "2026-11-07T23:00:00",
+        validText: "Valid until: Nov 7, 2026",
         productKeywords: "camera cameras digital canon eos lens photography",
         mainImg: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=700&q=80",
         store: "CameraShopGallery",
@@ -252,6 +440,9 @@ const REAL_PRODUCT_DATABASE = {
     // ---------------- BEAUTY (17 - 24) ----------------
     "Velvet Lipstick": {
         exactTitle: "Matte Velvet Lipstick Trio Set",
+        mainCat: "beauty",
+        expiry: "2026-11-11T22:00:00",
+        validText: "Valid until: Nov 11, 2026",
         productKeywords: "cosmetics makeup lipstick lip matte velvet",
         mainImg: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=700&q=80",
         store: "M&M Cosmetic House",
@@ -265,6 +456,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Foundation": {
         exactTitle: "Pro Makeup Brush & Eyeshadow Palette Combo",
+        mainCat: "beauty",
+        expiry: "2026-11-08T21:00:00",
+        validText: "Valid until: Nov 8, 2026",
         productKeywords: "cosmetics makeup brush eyeshadow palette combo",
         mainImg: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=700&q=80",
         store: "K-Beauty House",
@@ -278,6 +472,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Glow Skincare": {
         exactTitle: "Hydrating Glow Skincare Full Bundle",
+        mainCat: "beauty",
+        expiry: "2026-11-05T23:00:00",
+        validText: "Valid until: Nov 5, 2026",
         productKeywords: "skincare skin hydrating glow bundle cream cleanser toner",
         mainImg: "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=700&q=80",
         store: "Beauty Diary",
@@ -291,6 +488,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "COSRX": {
         exactTitle: "Advanced Repair Facial Dropper Serum",
+        mainCat: "beauty",
+        expiry: "2026-11-07T22:00:00",
+        validText: "Valid until: Nov 7, 2026",
         productKeywords: "skincare skin facial serum dropper repair essence",
         mainImg: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=700&q=80",
         store: "The Face Shop",
@@ -304,6 +504,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Eau De Parfum": {
         exactTitle: "Luxury Floral Eau De Parfum (100ml)",
+        mainCat: "beauty",
+        expiry: "2026-11-01T09:00:00",
+        validText: "Valid until: Nov 1, 2026",
         productKeywords: "perfume perfumes fragrance floral parfum scent",
         mainImg: "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=700&q=80",
         store: "30K Perfumes",
@@ -317,6 +520,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Keratin Hair Spa": {
         exactTitle: "Keratin Hair Spa & Salon Blowout Package",
+        mainCat: "beauty",
+        expiry: "2026-11-09T20:00:00",
+        validText: "Valid until: Nov 9, 2026",
         productKeywords: "hair keratin spa blowout treatment package",
         mainImg: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=700&q=80",
         store: "V-47 Hair Salon",
@@ -330,6 +536,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Hair Styling": {
         exactTitle: "Professional Salon Hair Styling & Care Kit",
+        mainCat: "beauty",
+        expiry: "2026-11-10T21:00:00",
+        validText: "Valid until: Nov 10, 2026",
         productKeywords: "hair styling care kit dryer brush",
         mainImg: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=700&q=80",
         store: "Hair Republic Salon",
@@ -343,6 +552,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Gel Nail Art": {
         exactTitle: "Gel Nail Art & Luxury Spa Manicure",
+        mainCat: "beauty",
+        expiry: "2026-11-05T23:00:00",
+        validText: "Valid until: Nov 5, 2026",
         productKeywords: "nail nails gel manicure pedicure polish art",
         mainImg: "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=700&q=80",
         store: "Luna Studio",
@@ -358,6 +570,9 @@ const REAL_PRODUCT_DATABASE = {
     // ---------------- HOME & LIVING (25 - 32) ----------------
     "Nordic Accent Armchair": {
         exactTitle: "Minimalist Nordic Accent Armchair",
+        mainCat: "home",
+        expiry: "2026-11-08T20:00:00",
+        validText: "Valid until: Nov 8, 2026",
         productKeywords: "furniture armchair chair sofa seat nordic",
         mainImg: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=700&q=80",
         store: "Sweety Home Living Mall",
@@ -371,6 +586,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Office Desk Chair": {
         exactTitle: "Ergonomic Swivel Office Desk Chair",
+        mainCat: "home",
+        expiry: "2026-11-07T20:00:00",
+        validText: "Valid until: Nov 7, 2026",
         productKeywords: "furniture chair desk office swivel ergonomic seat",
         mainImg: "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?auto=format&fit=crop&w=700&q=80",
         store: "Crown Furniture",
@@ -384,6 +602,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Pendant Lamp": {
         exactTitle: "Modern Warm LED Dining Pendant Lamp",
+        mainCat: "home",
+        expiry: "2026-11-05T23:00:00",
+        validText: "Valid until: Nov 5, 2026",
         productKeywords: "decor lamp lighting light led pendant ceiling",
         mainImg: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=700&q=80",
         store: "PRO 1 Global Home Center",
@@ -397,6 +618,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Cotton Bedsheet Set": {
         exactTitle: "Luxury 1000-Thread Cotton Bedsheet Set",
+        mainCat: "home",
+        expiry: "2026-11-12T22:00:00",
+        validText: "Valid until: Nov 12, 2026",
         productKeywords: "bedding bedsheet bed cotton pillow sheet duvet",
         mainImg: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=700&q=80",
         store: "Sweety Home – Kyaik Ka San",
@@ -410,6 +634,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Air Fryer": {
         exactTitle: "Pro High-Speed Kitchen Blender (1.5L)",
+        mainCat: "home",
+        expiry: "2026-11-11T20:00:00",
+        validText: "Valid until: Nov 11, 2026",
         productKeywords: "kitchenware kitchen blender mixer juicer appliance",
         mainImg: "https://images.unsplash.com/photo-1570222094114-d054a817e56b?auto=format&fit=crop&w=700&q=80",
         store: "Lock & Lock Official",
@@ -423,6 +650,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Non-Stick Cookware": {
         exactTitle: "6-Piece Non-Stick Granite Cookware Set",
+        mainCat: "home",
+        expiry: "2026-11-01T12:00:00",
+        validText: "Valid until: Nov 1, 2026",
         productKeywords: "kitchenware kitchen cookware pan pot granite cooking",
         mainImg: "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=700&q=80",
         store: "Mike Mike Steel",
@@ -436,6 +666,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Robot Vacuum": {
         exactTitle: "Smart Robot Vacuum & Floor Mop Cleaner",
+        mainCat: "home",
+        expiry: "2026-11-10T21:00:00",
+        validText: "Valid until: Nov 10, 2026",
         productKeywords: "cleaning vacuum robot mop cleaner floor",
         mainImg: "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=700&q=80",
         store: "Hako Myanmar",
@@ -449,6 +682,9 @@ const REAL_PRODUCT_DATABASE = {
     },
     "Deep Cleaning Kit": {
         exactTitle: "Eco-Friendly Deep Home Cleaning Kit",
+        mainCat: "home",
+        expiry: "2026-11-05T23:00:00",
+        validText: "Valid until: Nov 5, 2026",
         productKeywords: "cleaning spray brush detergent cloth kit",
         mainImg: "https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?auto=format&fit=crop&w=700&q=80",
         store: "Urban Focus Cleaning Service Myanmar",
@@ -463,7 +699,1232 @@ const REAL_PRODUCT_DATABASE = {
 };
 
 // ==========================================================================
-// SMART COLOR ENGINE (SUPPORTS DIRECT IMAGE URLS + CANVAS RECOLORING)
+// 2. SEASONAL DISCOUNT MAPPING (4 SEASONS × 4 PRODUCTS = 16 PRODUCTS)
+//    & 8 FEATURED HOT DEALS (ALL 8 ARE ACTIVE - ZERO EXPIRED!)
+// ==========================================================================
+const SEASONAL_DEALS_MAPPING = {
+    thadingyut: {
+        label: "Thadingyut",
+        badgeText: "Thadingyut Special",
+        products: [
+            "18K Gold Layered Pendant Necklace",         // Fashion
+            "Samsung Galaxy S25 Ultra 5G (256GB)",       // Electronics
+            "Hydrating Glow Skincare Full Bundle",       // Beauty
+            "Modern Warm LED Dining Pendant Lamp"        // Home
+        ]
+    },
+    christmas: {
+        label: "Christmas",
+        badgeText: "Christmas Deal",
+        products: [
+            "Classic Fit Denim Jacket",                  // Fashion
+            "Apple iPad Air Wi-Fi (128GB)",              // Electronics
+            "Matte Velvet Lipstick Trio Set",            // Beauty
+            "Minimalist Nordic Accent Armchair"          // Home
+        ]
+    },
+    newyear: {
+        label: "New Year",
+        badgeText: "New Year Offer",
+        products: [
+            "Nike Free RN Running Sneakers",             // Fashion
+            "Sony Wireless Noise Canceling Headphones",  // Electronics
+            "Keratin Hair Spa & Salon Blowout Package",  // Beauty
+            "Pro High-Speed Kitchen Blender (1.5L)"      // Home
+        ]
+    },
+    monsoon: {
+        label: "MonSoon Season",
+        badgeText: "MonSoon Promo",
+        products: [
+            "Adidas EQT Bask ADV Sneakers",              // Fashion
+            "Redmi Note 14 Pro 5G",                      // Electronics
+            "Advanced Repair Facial Dropper Serum",      // Beauty
+            "Smart Robot Vacuum & Floor Mop Cleaner"     // Home
+        ]
+    }
+};
+
+const EIGHT_HOT_DEAL_TITLES = [
+    "Nike Free RN Running Sneakers",             // New Year Offer (Up to 3 Days)
+    "18K Gold Layered Pendant Necklace",         // Thadingyut Special (< 24 Hours: Nov 5 11PM)
+    "Sony Wireless Noise Canceling Headphones",  // New Year Offer (Up to 5 Days - Active!)
+    "Redmi Note 14 Pro 5G",                      // MonSoon Promo (< 24 Hours: Nov 5 11PM)
+    "Hydrating Glow Skincare Full Bundle",       // Thadingyut Special (< 24 Hours: Nov 5 11PM)
+    "Matte Velvet Lipstick Trio Set",            // Christmas Deal (Up to 7 Days)
+    "Minimalist Nordic Accent Armchair",         // Christmas Deal (Up to 3 Days)
+    "Smart Robot Vacuum & Floor Mop Cleaner"     // MonSoon Promo (Up to 5 Days)
+];
+
+function getSeasonBadgeForProduct(exactTitle) {
+    const lower = (exactTitle || '').toLowerCase();
+    for (const [seasonKey, info] of Object.entries(SEASONAL_DEALS_MAPPING)) {
+        if (info.products.some(p => p.toLowerCase() === lower)) {
+            return { key: seasonKey, badgeText: info.badgeText };
+        }
+    }
+    return null;
+}
+
+function injectSeasonBadgeIntoCardBody(colEl, badgeText) {
+    const oldImgBadge = colEl.querySelector('.deal-img-wrapper .badge-season-tag');
+    if (oldImgBadge) oldImgBadge.remove();
+
+    let bodyWrap = colEl.querySelector('.season-body-badge-wrap');
+    if (!bodyWrap) {
+        bodyWrap = document.createElement('div');
+        bodyWrap.className = 'season-body-badge-wrap';
+        const validSmall = colEl.querySelector('small.text-muted');
+        if (validSmall && validSmall.parentNode) {
+            validSmall.parentNode.insertBefore(bodyWrap, validSmall.nextSibling);
+        }
+    }
+    bodyWrap.innerHTML = `<span class="badge-season-tag"><i class="bi bi-stars"></i>${badgeText}</span>`;
+}
+
+function reorderBrowseByCategoryCards() {
+    const prefCats = getCustomerPreferredCategories();
+    const catSectionRow = document.querySelector('#categoryShowcaseSection .row.g-4');
+    if (!catSectionRow) return;
+
+    const catCols = Array.from(catSectionRow.children);
+    catCols.forEach((col, i) => {
+        if (!col.hasAttribute('data-orig-cat-idx')) {
+            col.setAttribute('data-orig-cat-idx', String(i));
+            const linkHref = (col.querySelector('a')?.getAttribute('href') || '').toLowerCase();
+            let catKey = 'other';
+            if (linkHref.includes('fashion')) catKey = 'fashion';
+            else if (linkHref.includes('electronics')) catKey = 'electronics';
+            else if (linkHref.includes('beauty')) catKey = 'beauty';
+            else if (linkHref.includes('home')) catKey = 'home';
+            col.setAttribute('data-cat-key', catKey);
+        }
+    });
+
+    catCols.sort((a, b) => {
+        const origA = parseInt(a.getAttribute('data-orig-cat-idx') || '0');
+        const origB = parseInt(b.getAttribute('data-orig-cat-idx') || '0');
+        if (prefCats.length > 0) {
+            const keyA = a.getAttribute('data-cat-key') || '';
+            const keyB = b.getAttribute('data-cat-key') || '';
+            const rankA = prefCats.indexOf(keyA);
+            const rankB = prefCats.indexOf(keyB);
+            const isPrefA = rankA !== -1;
+            const isPrefB = rankB !== -1;
+            if (isPrefA && !isPrefB) return -1;
+            if (!isPrefA && isPrefB) return 1;
+            if (isPrefA && isPrefB && rankA !== rankB) return rankA - rankB;
+        }
+        return origA - origB;
+    });
+
+    catCols.forEach(col => catSectionRow.appendChild(col));
+}
+
+// ==========================================================================
+// 3. HOME PAGE 5-SLIDE HERO BANNER CAROUSEL (5s INTERVAL) & SEASONAL SECTION
+// ==========================================================================
+let heroSlideInterval = null;
+let currentHeroSlideIndex = 0;
+let currentActiveSeasonKey = 'thadingyut';
+
+function setupHomeHeroSliderAndSeasonalSection() {
+    const dealsContainer = document.getElementById('dealsContainer');
+    const dealsSection = document.getElementById('dealsSection');
+    if (!dealsContainer || !dealsSection) return;
+
+    const allDealCols = Array.from(dealsContainer.querySelectorAll('.deal-col'));
+    const isHomePage = allDealCols.some(col => col.hasAttribute('data-hot'));
+
+    const subtitleEl = document.getElementById('dealsSectionSubtitle');
+    if (subtitleEl) subtitleEl.remove();
+
+    if (!isHomePage) return;
+
+    // Extend "Mega Weekend Deals End In:" timer on Hero Banner so it shows 5+ Days Left on Nov 5
+    const heroTimerEl = document.querySelector('.flash-timer-box [data-expiry]');
+    if (heroTimerEl) {
+        heroTimerEl.setAttribute('data-expiry', '2026-11-10T23:59:59');
+    }
+
+    const heroBanner = document.querySelector('.hero-banner');
+    if (heroBanner && !document.getElementById('heroSliderStage')) {
+        const originalRow = heroBanner.querySelector('.row.align-items-center');
+        if (originalRow) {
+            const sliderStage = document.createElement('div');
+            sliderStage.id = 'heroSliderStage';
+            sliderStage.className = 'hero-slider-stage';
+
+            const slide1 = document.createElement('div');
+            slide1.className = 'hero-slide-pane active';
+            slide1.setAttribute('data-slide-idx', '0');
+            originalRow.classList.add('w-100', 'm-0');
+            slide1.appendChild(originalRow);
+            sliderStage.appendChild(slide1);
+
+            const seasonalSlidesData = [
+                {
+                    seasonKey: "thadingyut",
+                    badge: "THADINGYUT FESTIVAL OF LIGHTS",
+                    title: "Celebrate Thadingyut with Exclusive Festival Store Deals",
+                    desc: "Light up your festival season with verified Yangon store promotions on gold jewelry, flagship smartphones, glowing skincare bundles, and warm home lighting.",
+                    btnText: "Explore Thadingyut Deals",
+                    imgUrl: "https://img.magnific.com/premium-vector/vector-illustration-tourists-partying_1316704-19661.jpg?semt=ais_hybrid&w=740&q=80"
+                },
+                {
+                    seasonKey: "monsoon",
+                    badge: "MONSOON SEASON MEGA OFFER",
+                    title: "Splash Into Savings with MonSoon Season Deals",
+                    desc: "Beat the rainy weather with special in-store promotions on street sneakers, smartphones, facial repair serums, and smart home robot cleaners.",
+                    btnText: "Explore MonSoon Deals",
+                    imgUrl: "https://static.vecteezy.com/system/resources/previews/007/822/226/non_2x/monsoon-sale-offer-banner-template-header-with-paper-cut-clouds-and-colorful-umbrella-on-dark-background-thunder-sky-raindrops-illustration-vector.jpg"
+                },
+                {
+                    seasonKey: "christmas",
+                    badge: "CHRISTMAS SEASON CELEBRATION",
+                    title: "Unwrap Joy with Festive Christmas Store Discounts",
+                    desc: "Find the perfect holiday gifts across Yangon outlets with limited-time deals on denim jackets, Apple iPads, velvet lipsticks, and Nordic armchairs.",
+                    btnText: "Explore Christmas Deals",
+                    imgUrl: "https://img.magnific.com/free-vector/christmas-season-celebration-horizontal-banner-template_23-2149895855.jpg?semt=ais_hybrid&w=740&q=80"
+                },
+                {
+                    seasonKey: "newyear",
+                    badge: "NEW YEAR SPECIAL PROMOTION",
+                    title: "Kickstart the New Year with Unbeatable Store Deals",
+                    desc: "Upgrade your lifestyle for the New Year with special savings on running shoes, wireless headphones, salon hair spa packages, and kitchen blenders.",
+                    btnText: "Explore New Year Deals",
+                    imgUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQA3uvmh28MzpRukE-ARl5WDWW9s6RKefMlQ1NK3TH3sp0PTw7DbR0BVcY&s=10"
+                }
+            ];
+
+            seasonalSlidesData.forEach((sData, idx) => {
+                const slidePane = document.createElement('div');
+                slidePane.className = 'hero-slide-pane';
+                slidePane.setAttribute('data-slide-idx', String(idx + 1));
+                slidePane.innerHTML = `
+                    <div class="row align-items-center g-4 w-100 m-0">
+                        <div class="col-lg-6">
+                            <span class="badge bg-warning text-dark fw-bold mb-3 px-3 py-2 rounded-pill">
+                                ${sData.badge}
+                            </span>
+                            <h1 class="display-6 fw-bold mb-3">${sData.title}</h1>
+                            <p class="lead opacity-75 mb-4" style="font-size: 1rem;">
+                                ${sData.desc}
+                            </p>
+                            <button type="button" class="btn btn-hero-blue btn-lg fw-bold px-4 py-2 hero-season-jump-btn" data-target-season="${sData.seasonKey}">
+                                ${sData.btnText} <i class="bi bi-arrow-down-circle ms-2"></i>
+                            </button>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="seasonal-banner-img-frame">
+                                <img src="${sData.imgUrl}" alt="${sData.title}">
+                            </div>
+                        </div>
+                    </div>
+                `;
+                sliderStage.appendChild(slidePane);
+            });
+
+            const navBar = document.createElement('div');
+            navBar.className = 'hero-slider-nav';
+            navBar.innerHTML = `
+                <button type="button" class="hero-slide-dot active" data-go-slide="0">Main Finder</button>
+                <button type="button" class="hero-slide-dot" data-go-slide="1">Thadingyut</button>
+                <button type="button" class="hero-slide-dot" data-go-slide="2">MonSoon Season</button>
+                <button type="button" class="hero-slide-dot" data-go-slide="3">Christmas</button>
+                <button type="button" class="hero-slide-dot" data-go-slide="4">New Year</button>
+            `;
+
+            heroBanner.innerHTML = '';
+            heroBanner.appendChild(sliderStage);
+            heroBanner.appendChild(navBar);
+
+            const slides = Array.from(heroBanner.querySelectorAll('.hero-slide-pane'));
+            const dots = Array.from(heroBanner.querySelectorAll('.hero-slide-dot'));
+
+            function showHeroSlide(index) {
+                currentHeroSlideIndex = (index + slides.length) % slides.length;
+                slides.forEach((sl, i) => sl.classList.toggle('active', i === currentHeroSlideIndex));
+                dots.forEach((dt, i) => dt.classList.toggle('active', i === currentHeroSlideIndex));
+            }
+
+            function startHeroAutoSlide() {
+                if (heroSlideInterval) clearInterval(heroSlideInterval);
+                heroSlideInterval = setInterval(() => {
+                    const sInput = document.getElementById('searchInput');
+                    if (sInput && (document.activeElement === sInput || sInput.value.trim() !== '')) {
+                        return;
+                    }
+                    showHeroSlide(currentHeroSlideIndex + 1);
+                }, 5000);
+            }
+
+            dots.forEach(dot => {
+                dot.addEventListener('click', () => {
+                    const targetIdx = parseInt(dot.getAttribute('data-go-slide'));
+                    showHeroSlide(targetIdx);
+                    startHeroAutoSlide();
+                });
+            });
+
+            heroBanner.querySelectorAll('.hero-season-jump-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetSeason = btn.getAttribute('data-target-season');
+                    activateSeasonalTab(targetSeason, true);
+                });
+            });
+
+            startHeroAutoSlide();
+        }
+    }
+
+    if (!document.getElementById('seasonalDiscountSection')) {
+        const seasonalSec = document.createElement('section');
+        seasonalSec.id = 'seasonalDiscountSection';
+        seasonalSec.className = 'container my-5 seasonal-section-wrapper';
+        seasonalSec.innerHTML = `
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3">
+                <div>
+                    <h3 class="fw-bold mb-0">Seasonal Discount</h3>
+                </div>
+                <div class="d-flex flex-wrap gap-2" id="seasonalFilterBtnsGroup">
+                    <button type="button" class="seasonal-filter-btn active" data-season="thadingyut">Thadingyut</button>
+                    <button type="button" class="seasonal-filter-btn" data-season="christmas">Christmas</button>
+                    <button type="button" class="seasonal-filter-btn" data-season="newyear">New Year</button>
+                    <button type="button" class="seasonal-filter-btn" data-season="monsoon">MonSoon Season</button>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span id="seasonalResultCounter" class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-semibold">
+                    Showing 4 Thadingyut Seasonal Deals • Click any festival tab on the right to explore all 16 seasonal deals
+                </span>
+            </div>
+            <div class="row g-4" id="seasonalDealsContainer"></div>
+        `;
+
+        dealsSection.parentNode.insertBefore(seasonalSec, dealsSection.nextSibling);
+
+        const seasonalContainer = document.getElementById('seasonalDealsContainer');
+        let sOrigIdx = 0;
+
+        for (const [seasonKey, seasonInfo] of Object.entries(SEASONAL_DEALS_MAPPING)) {
+            seasonInfo.products.forEach(prodTitle => {
+                const sourceCol = allDealCols.find(
+                    c => (c.getAttribute('data-title') || '').toLowerCase() === prodTitle.toLowerCase()
+                );
+                if (sourceCol) {
+                    const clonedCol = sourceCol.cloneNode(true);
+                    clonedCol.removeAttribute('data-hot');
+                    clonedCol.removeAttribute('data-preview-bound');
+                    clonedCol.setAttribute('data-season-cat', seasonKey);
+                    clonedCol.setAttribute('data-season-orig-idx', String(sOrigIdx++));
+
+                    injectSeasonBadgeIntoCardBody(clonedCol, seasonInfo.badgeText);
+                    seasonalContainer.appendChild(clonedCol);
+                }
+            });
+        }
+
+        document.querySelectorAll('.seasonal-filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const seasonKey = btn.getAttribute('data-season');
+                activateSeasonalTab(seasonKey, false);
+            });
+        });
+
+        activateSeasonalTab('thadingyut', false);
+    }
+}
+
+function activateSeasonalTab(seasonKey, scrollSmooth = false) {
+    currentActiveSeasonKey = seasonKey;
+    const seasonalBtns = document.querySelectorAll('.seasonal-filter-btn');
+    const seasonalContainer = document.getElementById('seasonalDealsContainer');
+    const seasonalCounter = document.getElementById('seasonalResultCounter');
+    if (!seasonalContainer) return;
+
+    seasonalBtns.forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-season') === seasonKey);
+    });
+
+    const seasonObj = SEASONAL_DEALS_MAPPING[seasonKey] || SEASONAL_DEALS_MAPPING.thadingyut;
+    const prefCats = getCustomerPreferredCategories();
+
+    if (seasonalCounter) {
+        seasonalCounter.innerText = `Showing 4 ${seasonObj.label} Seasonal Deals • Click any festival tab on the right to explore all 16 seasonal deals`;
+    }
+
+    const seasonalCols = Array.from(seasonalContainer.querySelectorAll('.deal-col'));
+    seasonalCols.forEach(col => {
+        col.style.display = col.getAttribute('data-season-cat') === seasonKey ? '' : 'none';
+    });
+
+    const visibleSeasonalCols = seasonalCols.filter(col => col.style.display !== 'none');
+
+    visibleSeasonalCols.sort((a, b) => {
+        const origA = parseInt(a.getAttribute('data-season-orig-idx') || '0');
+        const origB = parseInt(b.getAttribute('data-season-orig-idx') || '0');
+
+        if (prefCats.length > 0) {
+            const catA = (a.getAttribute('data-main-cat') || a.getAttribute('data-subcat') || '').toLowerCase();
+            const catB = (b.getAttribute('data-main-cat') || b.getAttribute('data-subcat') || '').toLowerCase();
+            const rankA = prefCats.indexOf(catA);
+            const rankB = prefCats.indexOf(catB);
+            const isPrefA = rankA !== -1;
+            const isPrefB = rankB !== -1;
+
+            if (isPrefA && !isPrefB) return -1;
+            if (!isPrefA && isPrefB) return 1;
+            if (isPrefA && isPrefB && rankA !== rankB) return rankA - rankB;
+        }
+        return origA - origB;
+    });
+
+    visibleSeasonalCols.forEach((col, idx) => {
+        col.classList.remove('card-reveal-anim');
+        void col.offsetWidth;
+        col.style.animationDelay = `${idx * 0.06}s`;
+        col.classList.add('card-reveal-anim');
+        seasonalContainer.appendChild(col);
+    });
+
+    if (scrollSmooth) {
+        const secEl = document.getElementById('seasonalDiscountSection');
+        if (secEl) {
+            secEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+}
+
+// ==========================================================================
+// 4. FORCED LOGIN GATE
+// ==========================================================================
+function setupForcedAuthGate() {
+    if (!document.getElementById('authGateOverlay')) {
+        const overlayHtml = `
+        <div id="authGateOverlay" class="d-none">
+            <div class="auth-glass-card">
+                <div id="authLoginStep">
+                    <div class="text-center mb-3">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-2" style="width:52px;height:52px;">
+                            <i class="bi bi-tag-fill fs-4 text-warning"></i>
+                        </div>
+                        <h4 class="fw-bold mb-1">Welcome to Deal<span class="text-warning">Scout</span></h4>
+                        <p class="text-muted small mb-0">Please sign in as Customer or Admin to access store deals</p>
+                    </div>
+
+                    <div class="auth-role-tabs">
+                        <button type="button" class="auth-role-btn active" id="tabCustomerBtn">
+                            <i class="bi bi-person-heart me-1"></i>Customer Login
+                        </button>
+                        <button type="button" class="auth-role-btn" id="tabAdminBtn">
+                            <i class="bi bi-shield-lock me-1"></i>Admin Login
+                        </button>
+                    </div>
+
+                    <div id="authErrorAlert" class="alert alert-danger py-2 px-3 small d-none mb-3"></div>
+
+                    <form id="customerLoginForm">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Gmail Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope-at text-primary"></i></span>
+                                <input type="email" id="custEmailInput" class="form-control" placeholder="example@gmail.com" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-key text-primary"></i></span>
+                                <input type="password" id="custPassInput" class="form-control" placeholder="Enter your password" required>
+                                <button type="button" class="btn-eye-input rounded-end" data-target="custPassInput" title="Show/Hide Password">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-accent w-100 py-2 fw-bold">
+                            <i class="bi bi-box-arrow-in-right me-1"></i>Continue as Customer
+                        </button>
+                    </form>
+
+                    <form id="adminLoginForm" class="d-none">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Admin Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person-badge text-warning"></i></span>
+                                <input type="text" id="adminUserInput" class="form-control" placeholder="Enter admin username" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Admin Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock text-warning"></i></span>
+                                <input type="password" id="adminPassInput" class="form-control" placeholder="Enter admin password" required>
+                                <button type="button" class="btn-eye-input rounded-end" data-target="adminPassInput" title="Show/Hide Password">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                            <i class="bi bi-shield-check me-1"></i>Login as Admin
+                        </button>
+                    </form>
+                </div>
+
+                <div id="authCategoryStep" class="d-none">
+                    <div class="text-center mb-3">
+                        <span class="badge bg-warning text-dark fw-bold px-3 py-1 rounded-pill mb-2">PERSONALIZE YOUR FEED</span>
+                        <h4 class="fw-bold mb-1">Choose Your Favorite Categories</h4>
+                        <p class="text-muted small mb-0">Select one or more product categories you want to see first!</p>
+                    </div>
+
+                    <div id="prefErrorAlert" class="alert alert-warning py-2 px-3 small d-none mb-3">
+                        Please select at least 1 category to continue.
+                    </div>
+
+                    <div class="pref-cat-grid mb-3">
+                        <div class="pref-cat-item" data-cat="fashion">
+                            <div class="pref-cat-check"><i class="bi bi-check-lg"></i></div>
+                            <i class="bi bi-handbag fs-2 text-primary d-block mb-1"></i>
+                            <div class="fw-bold small">Fashion</div>
+                            <small class="text-muted" style="font-size:0.72rem;">Shoes, Shirts, Bags</small>
+                        </div>
+                        <div class="pref-cat-item" data-cat="electronics">
+                            <div class="pref-cat-check"><i class="bi bi-check-lg"></i></div>
+                            <i class="bi bi-laptop fs-2 text-primary d-block mb-1"></i>
+                            <div class="fw-bold small">Electronics</div>
+                            <small class="text-muted" style="font-size:0.72rem;">Phones, Laptops, Audio</small>
+                        </div>
+                        <div class="pref-cat-item" data-cat="beauty">
+                            <div class="pref-cat-check"><i class="bi bi-check-lg"></i></div>
+                            <i class="bi bi-stars fs-2 text-primary d-block mb-1"></i>
+                            <div class="fw-bold small">Beauty</div>
+                            <small class="text-muted" style="font-size:0.72rem;">Cosmetics, Skincare, Salon</small>
+                        </div>
+                        <div class="pref-cat-item" data-cat="home">
+                            <div class="pref-cat-check"><i class="bi bi-check-lg"></i></div>
+                            <i class="bi bi-house-heart fs-2 text-primary d-block mb-1"></i>
+                            <div class="fw-bold small">Home & Living</div>
+                            <small class="text-muted" style="font-size:0.72rem;">Furniture, Kitchen, Decor</small>
+                        </div>
+                    </div>
+
+                    <button type="button" id="confirmCatPrefBtn" class="btn btn-accent w-100 py-2 fw-bold">
+                        <i class="bi bi-stars me-1"></i>Show My Selected Deals First
+                    </button>
+                </div>
+            </div>
+        </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', overlayHtml);
+    }
+
+    document.querySelectorAll('.btn-eye-input').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.getAttribute('data-target');
+            const inputEl = document.getElementById(targetId);
+            const iconEl = btn.querySelector('i');
+            if (!inputEl) return;
+            if (inputEl.type === 'password') {
+                inputEl.type = 'text';
+                iconEl.className = 'bi bi-eye-slash text-primary';
+            } else {
+                inputEl.type = 'password';
+                iconEl.className = 'bi bi-eye';
+            }
+        });
+    });
+
+    const overlayEl = document.getElementById('authGateOverlay');
+    const loginStepEl = document.getElementById('authLoginStep');
+    const catStepEl = document.getElementById('authCategoryStep');
+    const tabCustBtn = document.getElementById('tabCustomerBtn');
+    const tabAdminBtn = document.getElementById('tabAdminBtn');
+    const custForm = document.getElementById('customerLoginForm');
+    const adminForm = document.getElementById('adminLoginForm');
+    const errAlert = document.getElementById('authErrorAlert');
+
+    tabCustBtn.addEventListener('click', () => {
+        tabCustBtn.classList.add('active');
+        tabAdminBtn.classList.remove('active');
+        custForm.classList.remove('d-none');
+        adminForm.classList.add('d-none');
+        errAlert.classList.add('d-none');
+    });
+
+    tabAdminBtn.addEventListener('click', () => {
+        tabAdminBtn.classList.add('active');
+        tabCustBtn.classList.remove('active');
+        adminForm.classList.remove('d-none');
+        custForm.classList.add('d-none');
+        errAlert.classList.add('d-none');
+    });
+
+    let pendingCustomer = null;
+
+    custForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('custEmailInput').value.trim();
+        const pass = document.getElementById('custPassInput').value.trim();
+
+        if (!email.toLowerCase().endsWith('@gmail.com')) {
+            errAlert.innerText = 'Please enter a valid @gmail.com address for Customer Login.';
+            errAlert.classList.remove('d-none');
+            return;
+        }
+        if (pass.length < 3) {
+            errAlert.innerText = 'Password must be at least 3 characters.';
+            errAlert.classList.remove('d-none');
+            return;
+        }
+
+        errAlert.classList.add('d-none');
+        pendingCustomer = { email, pass };
+        recordCustomerLogin(email, pass);
+
+        loginStepEl.classList.add('d-none');
+        catStepEl.classList.remove('d-none');
+    });
+
+    const prefItems = document.querySelectorAll('.pref-cat-item');
+    prefItems.forEach(item => {
+        item.addEventListener('click', () => {
+            item.classList.toggle('selected');
+            document.getElementById('prefErrorAlert').classList.add('d-none');
+        });
+    });
+
+    document.getElementById('confirmCatPrefBtn').addEventListener('click', () => {
+        const selectedCats = Array.from(document.querySelectorAll('.pref-cat-item.selected'))
+            .map(el => el.getAttribute('data-cat'));
+
+        if (selectedCats.length === 0) {
+            document.getElementById('prefErrorAlert').classList.remove('d-none');
+            return;
+        }
+
+        const sessionObj = {
+            role: 'customer',
+            identifier: pendingCustomer ? pendingCustomer.email : (getCurrentSession()?.identifier || 'customer@gmail.com'),
+            preferredCategories: selectedCats,
+            loginTime: formatNowDateTime()
+        };
+        localStorage.setItem('dealScoutActiveSession', JSON.stringify(sessionObj));
+
+        overlayEl.classList.add('d-none');
+        document.body.classList.remove('auth-locked');
+        updateNavbarAuthAndLinks();
+        reorderBrowseByCategoryCards();
+        if (typeof window.triggerDealScoutFilterUpdate === 'function') {
+            window.triggerDealScoutFilterUpdate();
+        }
+        activateSeasonalTab(currentActiveSeasonKey, false);
+        showToastNotification(`Welcome! Prioritizing ${selectedCats.join(', ').toUpperCase()} deals first across all sections.`, 'success');
+    });
+
+    adminForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const username = document.getElementById('adminUserInput').value.trim();
+        const pass = document.getElementById('adminPassInput').value.trim();
+
+        const validAdmin = ADMIN_ACCOUNTS.find(
+            a => a.username.toLowerCase() === username.toLowerCase() && a.password === pass
+        );
+
+        if (!validAdmin) {
+            errAlert.innerText = 'Invalid Admin credentials!';
+            errAlert.classList.remove('d-none');
+            return;
+        }
+
+        errAlert.classList.add('d-none');
+        recordAdminLogin(validAdmin.username, pass);
+
+        const sessionObj = {
+            role: 'admin',
+            identifier: validAdmin.username,
+            preferredCategories: [],
+            loginTime: formatNowDateTime()
+        };
+        localStorage.setItem('dealScoutActiveSession', JSON.stringify(sessionObj));
+
+        overlayEl.classList.add('d-none');
+        document.body.classList.remove('auth-locked');
+        updateNavbarAuthAndLinks();
+        reorderBrowseByCategoryCards();
+        if (typeof window.triggerDealScoutFilterUpdate === 'function') {
+            window.triggerDealScoutFilterUpdate();
+        }
+        activateSeasonalTab(currentActiveSeasonKey, false);
+        showToastNotification(`Logged in as Admin (${validAdmin.username})!`, 'success');
+    });
+
+    const currentSession = getCurrentSession();
+    if (!currentSession) {
+        overlayEl.classList.remove('d-none');
+        document.body.classList.add('auth-locked');
+    } else {
+        overlayEl.classList.add('d-none');
+        document.body.classList.remove('auth-locked');
+        reorderBrowseByCategoryCards();
+    }
+}
+
+function triggerLogoutAndShowLogin() {
+    localStorage.removeItem('dealScoutActiveSession');
+    closeCustomPageViews();
+    const overlayEl = document.getElementById('authGateOverlay');
+    const loginStepEl = document.getElementById('authLoginStep');
+    const catStepEl = document.getElementById('authCategoryStep');
+    if (overlayEl) {
+        loginStepEl.classList.remove('d-none');
+        catStepEl.classList.add('d-none');
+        document.querySelectorAll('.pref-cat-item').forEach(i => i.classList.remove('selected'));
+        document.getElementById('custEmailInput').value = '';
+        document.getElementById('custPassInput').value = '';
+        document.getElementById('adminUserInput').value = '';
+        document.getElementById('adminPassInput').value = '';
+        overlayEl.classList.remove('d-none');
+        document.body.classList.add('auth-locked');
+    }
+}
+
+function openCategoryPreferenceModalAgain() {
+    const session = getCurrentSession();
+    if (!session || session.role !== 'customer') return;
+    const overlayEl = document.getElementById('authGateOverlay');
+    const loginStepEl = document.getElementById('authLoginStep');
+    const catStepEl = document.getElementById('authCategoryStep');
+
+    loginStepEl.classList.add('d-none');
+    catStepEl.classList.remove('d-none');
+
+    document.querySelectorAll('.pref-cat-item').forEach(item => {
+        const cat = item.getAttribute('data-cat');
+        item.classList.toggle('selected', (session.preferredCategories || []).includes(cat));
+    });
+
+    overlayEl.classList.remove('d-none');
+    document.body.classList.add('auth-locked');
+}
+
+// ==========================================================================
+// 5. UNIFIED 3-LINE HAMBURGER MENU IN NAVBAR ("Product Status")
+// ==========================================================================
+function toggleSiteTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-bs-theme', newTheme);
+    localStorage.setItem('dealScoutTheme', newTheme);
+    updateNavbarAuthAndLinks();
+}
+
+function setupThemeToggle() {
+    const savedTheme = localStorage.getItem('dealScoutTheme') || 'light';
+    document.documentElement.setAttribute('data-bs-theme', savedTheme);
+}
+
+function updateNavbarAuthAndLinks() {
+    const session = getCurrentSession();
+    const navUl = document.querySelector('.navbar-nav');
+    const rightControls = document.querySelector('.navbar-dealscout .d-flex.align-items-center');
+    const currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
+
+    if (navUl) {
+        navUl.querySelectorAll('a[href]').forEach(a => {
+            a.addEventListener('click', () => {
+                closeCustomPageViews();
+            });
+        });
+    }
+
+    if (rightControls) {
+        let menuWrapper = document.getElementById('navUnifiedMenuWrapper');
+        if (!menuWrapper) {
+            menuWrapper = document.createElement('div');
+            menuWrapper.id = 'navUnifiedMenuWrapper';
+            menuWrapper.className = 'dropdown';
+            rightControls.appendChild(menuWrapper);
+        }
+
+        const isAdmin = session && session.role === 'admin';
+        const userLabel = session
+            ? (isAdmin ? `Admin: ${session.identifier}` : session.identifier)
+            : 'Guest User';
+
+        const themeItemLabel = currentTheme === 'dark'
+            ? `<i class="bi bi-sun-fill text-warning fs-6"></i><span>Switch to Light Mode</span>`
+            : `<i class="bi bi-moon-stars-fill text-primary fs-6"></i><span>Switch to Dark Mode</span>`;
+
+        const adminMenuItemHtml = isAdmin
+            ? `<li><a class="dropdown-item" id="menuAdminPanelBtn"><i class="bi bi-shield-lock-fill text-warning fs-6"></i><span>Admin Panel</span></a></li>`
+            : '';
+
+        menuWrapper.innerHTML = `
+            <button class="btn-nav-menu-lines" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Menu">
+                <i class="bi bi-list"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end unified-nav-dropdown">
+                <li class="px-3 py-2 border-bottom mb-1">
+                    <div class="small text-muted" style="font-size:0.72rem;">SIGNED IN AS</div>
+                    <div class="fw-bold small text-truncate" style="max-width: 195px;">${userLabel}</div>
+                </li>
+                <li>
+                    <a class="dropdown-item" id="menuProductStatsBtn">
+                        <i class="bi bi-bar-chart-fill text-primary fs-6"></i><span>Product Status</span>
+                    </a>
+                </li>
+                ${adminMenuItemHtml}
+                <li>
+                    <a class="dropdown-item" id="menuThemeToggleBtn">
+                        ${themeItemLabel}
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider my-1"></li>
+                <li>
+                    <a class="dropdown-item text-danger" id="menuLogoutBtn">
+                        <i class="bi bi-box-arrow-right fs-6"></i><span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        `;
+
+        document.getElementById('menuProductStatsBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            showProductStatsPageView();
+        });
+
+        document.getElementById('menuAdminPanelBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            showAdminDashboardPageView();
+        });
+
+        document.getElementById('menuThemeToggleBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleSiteTheme();
+        });
+
+        document.getElementById('menuLogoutBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            triggerLogoutAndShowLogin();
+        });
+    }
+}
+
+// ==========================================================================
+// 6. PAGE VIEW 1: PRODUCT STATUS BAR CHART PAGE (RENAMED TO PRODUCT STATUS)
+// ==========================================================================
+const MONTHLY_PRODUCT_STATS = {
+    october2026: {
+        label: "October 2026 (Previous Month Data)",
+        totalProducts: 52,
+        categories: [
+            { name: "Fashion", count: 16, color: "#FF5A1F" },
+            { name: "Electronics", count: 14, color: "#2563EB" },
+            { name: "Beauty", count: 12, color: "#EC4899" },
+            { name: "Home & Living", count: 10, color: "#16A34A" }
+        ],
+        breakdown: {
+            "Fashion (16 Items)": [
+                { item: "Clothing (Shirts & Jackets)", count: 5, unit: "Items", color: "#FF5A1F" },
+                { item: "Shoes & Sneakers", count: 4, unit: "Pairs", color: "#FF5A1F" },
+                { item: "Bags & Backpacks", count: 3, unit: "Items", color: "#FF5A1F" },
+                { item: "Jewelry & Accessories", count: 2, unit: "Items", color: "#FF5A1F" },
+                { item: "Sunglasses & Eyewear", count: 2, unit: "Pairs", color: "#FF5A1F" }
+            ],
+            "Electronics (14 Items)": [
+                { item: "Smartphones", count: 4, unit: "Units", color: "#2563EB" },
+                { item: "Laptops & Notebooks", count: 3, unit: "Units", color: "#2563EB" },
+                { item: "Tablets", count: 2, unit: "Units", color: "#2563EB" },
+                { item: "Wireless Headphones", count: 3, unit: "Units", color: "#2563EB" },
+                { item: "Digital Cameras", count: 2, unit: "Units", color: "#2563EB" }
+            ],
+            "Beauty (12 Items)": [
+                { item: "Cosmetics & Lipstick Sets", count: 4, unit: "Sets", color: "#EC4899" },
+                { item: "Skincare Bundles", count: 3, unit: "Sets", color: "#EC4899" },
+                { item: "Perfumes & Fragrances", count: 2, unit: "Bottles", color: "#EC4899" },
+                { item: "Hair & Styling Packages", count: 2, unit: "Packages", color: "#EC4899" },
+                { item: "Nail Salon Packages", count: 1, unit: "Package", color: "#EC4899" }
+            ],
+            "Home & Living (10 Items)": [
+                { item: "Furniture & Chairs", count: 3, unit: "Units", color: "#16A34A" },
+                { item: "Home Lighting & Decor", count: 2, unit: "Units", color: "#16A34A" },
+                { item: "Bedding Sets", count: 2, unit: "Sets", color: "#16A34A" },
+                { item: "Kitchenware & Appliances", count: 2, unit: "Sets", color: "#16A34A" },
+                { item: "Cleaning Essentials", count: 1, unit: "Set", color: "#16A34A" }
+            ]
+        }
+    },
+    november2026: {
+        label: "November 2026 (Current Month - Live Tracking)",
+        totalProducts: 32,
+        categories: [
+            { name: "Fashion", count: 8, color: "#FF5A1F" },
+            { name: "Electronics", count: 8, color: "#2563EB" },
+            { name: "Beauty", count: 8, color: "#EC4899" },
+            { name: "Home & Living", count: 8, color: "#16A34A" }
+        ],
+        breakdown: {
+            "Fashion (8 Items)": [
+                { item: "Clothing (Shirt & Denim Jacket)", count: 2, unit: "Items", color: "#FF5A1F" },
+                { item: "Shoes (Nike & Adidas Sneakers)", count: 2, unit: "Pairs", color: "#FF5A1F" },
+                { item: "Bags (Crossbody & Tote Bag)", count: 2, unit: "Items", color: "#FF5A1F" },
+                { item: "Jewelry (Pendant Necklace)", count: 1, unit: "Item", color: "#FF5A1F" },
+                { item: "Sunglasses (UV400 Shades)", count: 1, unit: "Pair", color: "#FF5A1F" }
+            ],
+            "Electronics (8 Items)": [
+                { item: "Phones (Samsung S25 & Redmi 14)", count: 2, unit: "Units", color: "#2563EB" },
+                { item: "Laptops (ASUS TUF & Dell Inspiron)", count: 2, unit: "Units", color: "#2563EB" },
+                { item: "Tablets (Apple iPad Air)", count: 1, unit: "Unit", color: "#2563EB" },
+                { item: "Headphones (Sony & Pure Bass)", count: 2, unit: "Units", color: "#2563EB" },
+                { item: "Cameras (Canon EOS Kit)", count: 1, unit: "Unit", color: "#2563EB" }
+            ],
+            "Beauty (8 Items)": [
+                { item: "Cosmetics (Lipstick & Palette)", count: 2, unit: "Sets", color: "#EC4899" },
+                { item: "Skincare (Glow Bundle & Serum)", count: 2, unit: "Sets", color: "#EC4899" },
+                { item: "Perfumes (Floral Eau De Parfum)", count: 1, unit: "Bottle", color: "#EC4899" },
+                { item: "Hair & Styling (Spa & Care Kit)", count: 2, unit: "Packages", color: "#EC4899" },
+                { item: "Nail Salons (Gel Nail Manicure)", count: 1, unit: "Package", color: "#EC4899" }
+            ],
+            "Home & Living (8 Items)": [
+                { item: "Furniture (Armchair & Desk Chair)", count: 2, unit: "Units", color: "#16A34A" },
+                { item: "Decor (LED Pendant Lamp)", count: 1, unit: "Unit", color: "#16A34A" },
+                { item: "Bedding (Cotton Bedsheet Set)", count: 1, unit: "Set", color: "#16A34A" },
+                { item: "Kitchenware (Blender & Cookware)", count: 2, unit: "Sets", color: "#16A34A" },
+                { item: "Cleaning (Robot Vacuum & Kit)", count: 2, unit: "Sets", color: "#16A34A" }
+            ]
+        }
+    }
+};
+
+function hideDefaultStoreSections() {
+    document.querySelectorAll('header, section, main').forEach(el => {
+        if (el.id !== 'customDynamicPageContainer') {
+            el.classList.add('d-none');
+        }
+    });
+    document.querySelectorAll('.navbar-nav .nav-link').forEach(l => l.classList.remove('active'));
+}
+
+function closeCustomPageViews() {
+    const customContainer = document.getElementById('customDynamicPageContainer');
+    if (customContainer) customContainer.classList.add('d-none');
+    document.querySelectorAll('header, section, main').forEach(el => {
+        if (el.id !== 'customDynamicPageContainer') {
+            el.classList.remove('d-none');
+        }
+    });
+}
+
+function getOrCreateCustomPageContainer() {
+    let container = document.getElementById('customDynamicPageContainer');
+    if (!container) {
+        container = document.createElement('main');
+        container.id = 'customDynamicPageContainer';
+        container.className = 'container my-4';
+        const footer = document.querySelector('footer');
+        if (footer) {
+            footer.parentNode.insertBefore(container, footer);
+        } else {
+            document.body.appendChild(container);
+        }
+    }
+    container.classList.remove('d-none');
+    return container;
+}
+
+function showProductStatsPageView(selectedMonthKey = 'november2026') {
+    hideDefaultStoreSections();
+
+    const container = getOrCreateCustomPageContainer();
+    const monthData = MONTHLY_PRODUCT_STATS[selectedMonthKey];
+    const maxCatCount = 20;
+
+    const vBarsHtml = monthData.categories.map(c => {
+        const heightPct = Math.round((c.count / maxCatCount) * 100);
+        return `
+            <div class="v-bar-col">
+                <div class="v-bar-val">${c.count} Items</div>
+                <div class="v-bar-fill" style="height: ${heightPct}%; background: ${c.color};"></div>
+                <div class="small fw-bold mt-2 text-center">${c.name}</div>
+            </div>
+        `;
+    }).join('');
+
+    let breakdownCardsHtml = '';
+    for (const [groupTitle, items] of Object.entries(monthData.breakdown)) {
+        const rowsHtml = items.map(it => {
+            const widthPct = Math.min(100, Math.round((it.count / 6) * 100));
+            return `
+                <div class="h-bar-row">
+                    <div class="d-flex justify-content-between small fw-bold mb-1">
+                        <span>${it.item}</span>
+                        <span class="text-primary">${it.count} ${it.unit}</span>
+                    </div>
+                    <div class="h-bar-track">
+                        <div class="h-bar-fill" style="width: ${widthPct}%; background: ${it.color};"></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        breakdownCardsHtml += `
+            <div class="col-md-6">
+                <div class="analytics-panel-card h-100">
+                    <h6 class="fw-bold mb-3 pb-2 border-bottom">${groupTitle}</h6>
+                    ${rowsHtml}
+                </div>
+            </div>
+        `;
+    }
+
+    container.innerHTML = `
+        <div class="hero-banner shadow-sm py-4 px-4 mb-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <span class="badge bg-warning text-dark fw-bold mb-2">MONTHLY PRODUCT STATUS</span>
+                    <h2 class="fw-bold mb-1">Product Status & Monthly Count (Bar Chart)</h2>
+                    <p class="mb-0 opacity-75 small">Compare total discounted products posted across Fashion, Electronics, Beauty, and Home & Living.</p>
+                </div>
+                <button type="button" class="btn btn-light fw-bold" onclick="closeCustomPageViews()">
+                    <i class="bi bi-arrow-left me-1"></i>Back to Deals
+                </button>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="month-switch-btn ${selectedMonthKey === 'october2026' ? 'active' : ''}" id="btnStatsOct">
+                    October 2026 (Previous Month Data)
+                </button>
+                <button type="button" class="month-switch-btn ${selectedMonthKey === 'november2026' ? 'active' : ''}" id="btnStatsNov">
+                    November 2026 (Current Month - Live Tracking)
+                </button>
+            </div>
+            <span class="badge bg-primary-subtle text-primary border px-3 py-2 rounded-pill fs-6">
+                Total Products in ${selectedMonthKey === 'october2026' ? 'October' : 'November'}: <strong>${monthData.totalProducts} Items</strong>
+            </span>
+        </div>
+
+        <div class="analytics-panel-card mb-4">
+            <h5 class="fw-bold mb-1">Main Category Product Status — ${monthData.label}</h5>
+            <p class="text-muted small mb-3">Visual bar chart comparing total products in each of the 4 main departments</p>
+            <div class="v-chart-stage">
+                ${vBarsHtml}
+            </div>
+        </div>
+
+        <h5 class="fw-bold mb-3">Detailed Product Count by Item Type (Bar Chart)</h5>
+        <div class="row g-4">
+            ${breakdownCardsHtml}
+        </div>
+    `;
+
+    document.getElementById('btnStatsOct').addEventListener('click', () => showProductStatsPageView('october2026'));
+    document.getElementById('btnStatsNov').addEventListener('click', () => showProductStatsPageView('november2026'));
+}
+
+// ==========================================================================
+// 7. PAGE VIEW 2: ADMIN-ONLY DASHBOARD (EQUAL KPI CARDS & ENCRYPTED CUSTOMER PASSWORDS)
+// ==========================================================================
+function showAdminDashboardPageView(selectedMonthKey = 'november2026') {
+    const session = getCurrentSession();
+    if (!session || session.role !== 'admin') {
+        showToastNotification('Access Denied! Admin privileges required.', 'danger');
+        return;
+    }
+
+    hideDefaultStoreSections();
+
+    const container = getOrCreateCustomPageContainer();
+    const allAnalytics = getAnalyticsData();
+    const monthObj = allAnalytics[selectedMonthKey];
+
+    const customerLoginSum = monthObj.customers.reduce((acc, c) => acc + (c.loginCount || 0), 0);
+    const adminLoginSum = monthObj.admins.reduce((acc, a) => acc + (a.loginCount || 0), 0);
+    const totalLoginSum = customerLoginSum + adminLoginSum;
+    const totalSaveSum = monthObj.totalSaveDeals || 0;
+
+    // Customer Passwords are permanently encrypted & non-viewable for Customer Security!
+    const custRowsHtml = monthObj.customers.length === 0
+        ? `<tr><td colspan="6" class="text-center text-muted py-4">No customer logins recorded yet in November 2026. Log out and sign in as a Customer to test live tracking!</td></tr>`
+        : monthObj.customers.map((c, idx) => `
+            <tr>
+                <td class="fw-bold">${idx + 1}</td>
+                <td><i class="bi bi-envelope-fill text-primary me-1"></i>${c.email}</td>
+                <td>
+                    <div class="table-pass-wrap text-muted" title="Encrypted for Customer Security">
+                        <i class="bi bi-lock-fill text-secondary small"></i>
+                        <span class="pass-mask-text">••••••••</span>
+                    </div>
+                </td>
+                <td><span class="badge bg-primary-subtle text-primary border px-2 py-1">${c.loginCount} times</span></td>
+                <td><span class="badge bg-success-subtle text-success border px-2 py-1">${c.saveCount} deals</span></td>
+                <td class="small text-muted">${c.lastLogin}</td>
+            </tr>
+        `).join('');
+
+    const adminRowsHtml = monthObj.admins.length === 0
+        ? `<tr><td colspan="5" class="text-center text-muted py-4">No admin logins recorded yet for this period.</td></tr>`
+        : monthObj.admins.map((a, idx) => `
+            <tr>
+                <td class="fw-bold">${idx + 1}</td>
+                <td><span class="badge bg-warning text-dark">${a.username}</span></td>
+                <td>
+                    <div class="table-pass-wrap">
+                        <span class="pass-mask-text">••••••••</span>
+                        <button type="button" class="btn-table-eye" data-real-pass="${a.password}" title="Show/Hide Admin Password">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </td>
+                <td><span class="badge bg-info-subtle text-info border px-2 py-1">${a.loginCount} times</span></td>
+                <td class="small text-muted">${a.lastLogin}</td>
+            </tr>
+        `).join('');
+
+    container.innerHTML = `
+        <div class="hero-banner shadow-sm py-4 px-4 mb-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <span class="badge bg-warning text-dark fw-bold mb-2">ADMIN-ONLY EXCLUSIVE DASHBOARD</span>
+                    <h2 class="fw-bold mb-1">Monthly Login & Save Deal Analytics</h2>
+                    <p class="mb-0 opacity-75 small">Monitor customer engagement, timestamps, and total saved deals across October & November 2026.</p>
+                </div>
+                <button type="button" class="btn btn-light fw-bold" onclick="closeCustomPageViews()">
+                    <i class="bi bi-arrow-left me-1"></i>Back to Storefront
+                </button>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="month-switch-btn ${selectedMonthKey === 'october2026' ? 'active' : ''}" id="btnAdminOct">
+                    October 2026 (Previous Month Data)
+                </button>
+                <button type="button" class="month-switch-btn ${selectedMonthKey === 'november2026' ? 'active' : ''}" id="btnAdminNov">
+                    November 2026 (Current Month - Live Tracking)
+                </button>
+            </div>
+        </div>
+
+        <!-- 4 Equal-Sized KPI Cards -->
+        <div class="row g-3 mb-4 align-items-stretch">
+            <div class="col-sm-6 col-lg-3">
+                <div class="kpi-stat-card h-100">
+                    <div class="kpi-icon-box bg-primary-subtle text-primary"><i class="bi bi-people-fill"></i></div>
+                    <div>
+                        <div class="text-muted small fw-semibold">Customer Login Count</div>
+                        <div class="fs-3 fw-bolder">${customerLoginSum}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="kpi-stat-card h-100">
+                    <div class="kpi-icon-box bg-warning-subtle text-warning"><i class="bi bi-shield-check"></i></div>
+                    <div>
+                        <div class="text-muted small fw-semibold">Admin Login Count</div>
+                        <div class="fs-3 fw-bolder">${adminLoginSum}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="kpi-stat-card h-100">
+                    <div class="kpi-icon-box bg-info-subtle text-info"><i class="bi bi-box-arrow-in-right"></i></div>
+                    <div>
+                        <div class="text-muted small fw-semibold">Total Monthly Logins</div>
+                        <div class="fs-3 fw-bolder">${totalLoginSum}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="kpi-stat-card h-100">
+                    <div class="kpi-icon-box bg-success-subtle text-success"><i class="bi bi-bookmark-heart-fill"></i></div>
+                    <div>
+                        <div class="text-muted small fw-semibold">Total Save Deal Count</div>
+                        <div class="fs-3 fw-bolder text-success">${totalSaveSum}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table 1: Customer Login & Save Deal Records (Passwords Encrypted & Hidden) -->
+        <div class="analytics-panel-card mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold mb-0">Customer Login & Save Deal Records (${monthObj.customers.length} Customers)</h5>
+                    <small class="text-muted"><i class="bi bi-shield-lock-fill text-success me-1"></i>Customer passwords are encrypted and hidden to protect customer security</small>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Customer Gmail</th>
+                            <th>Password</th>
+                            <th>Login Count</th>
+                            <th>Save Deal Count</th>
+                            <th>Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${custRowsHtml}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Table 2: Admin Login Activity Table -->
+        <div class="analytics-panel-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="fw-bold mb-0">Admin Login Activity Records</h5>
+                    <small class="text-muted">Displays Admin Username, Password, Login Count, and Last Login Date & Time</small>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Admin Username</th>
+                            <th>Password</th>
+                            <th>Login Count</th>
+                            <th>Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${adminRowsHtml}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+
+    container.querySelectorAll('.btn-table-eye').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const wrap = btn.closest('.table-pass-wrap');
+            const textSpan = wrap.querySelector('.pass-mask-text');
+            const iconEl = btn.querySelector('i');
+            const realPass = btn.getAttribute('data-real-pass') || '';
+
+            if (textSpan.innerText === '••••••••') {
+                textSpan.innerText = realPass;
+                iconEl.className = 'bi bi-eye-slash text-primary';
+            } else {
+                textSpan.innerText = '••••••••';
+                iconEl.className = 'bi bi-eye';
+            }
+        });
+    });
+
+    document.getElementById('btnAdminOct').addEventListener('click', () => showAdminDashboardPageView('october2026'));
+    document.getElementById('btnAdminNov').addEventListener('click', () => showAdminDashboardPageView('november2026'));
+}
+
+// ==========================================================================
+// 8. SMART COLOR ENGINE & PRODUCT CATALOG MATCHER
 // ==========================================================================
 function rgbToHsl(r, g, b) {
     r /= 255; g /= 255; b /= 255;
@@ -581,7 +2042,7 @@ function findProductCatalogEntry(title) {
     if (lower.includes("tote")) return REAL_PRODUCT_DATABASE["Everyday Tote Bag"];
     if (lower.includes("necklace") || lower.includes("pendant")) return REAL_PRODUCT_DATABASE["Pendant Necklace"];
     if (lower.includes("shades") || lower.includes("sunglasses")) return REAL_PRODUCT_DATABASE["Aviator Shades"];
-    if (lower.includes("samsung") || lower.includes("s24") || lower.includes("s25") || lower.includes("ultra")) return REAL_PRODUCT_DATABASE["Galaxy S24"];
+    if (lower.includes("samsung") || lower.includes("s25") || lower.includes("s25") || lower.includes("ultra")) return REAL_PRODUCT_DATABASE["Galaxy S24"];
     if (lower.includes("redmi")) return REAL_PRODUCT_DATABASE["Redmi Note"];
     if (lower.includes("asus") || lower.includes("tuf")) return REAL_PRODUCT_DATABASE["ASUS TUF Gaming"];
     if (lower.includes("dell")) return REAL_PRODUCT_DATABASE["Dell Inspiron"];
@@ -608,15 +2069,14 @@ function findProductCatalogEntry(title) {
     return null;
 }
 
-// ==========================================================================
-// SYNC ALL CARDS: ENSURE STORE NAME & PRODUCT-ONLY KEYWORDS ARE SET
-// ==========================================================================
 function syncAllCardsWithRealStores() {
     document.querySelectorAll('.cat-card').forEach((catEl, i) => {
         catEl.style.animationDelay = `${i * 0.08}s`;
     });
 
     const cols = document.querySelectorAll('.deal-col');
+    const isHomePage = Array.from(cols).some(col => col.hasAttribute('data-hot'));
+
     cols.forEach(col => {
         const rawTitle = col.getAttribute('data-title') || col.querySelector('h6')?.innerText || '';
         const entry = findProductCatalogEntry(rawTitle);
@@ -628,6 +2088,29 @@ function syncAllCardsWithRealStores() {
         col.setAttribute('data-map-query', entry.mapQuery);
         col.setAttribute('data-map-link', entry.mapLink);
         col.setAttribute('data-product-keywords', entry.productKeywords || '');
+        col.setAttribute('data-main-cat', entry.mainCat || '');
+
+        // Sync updated Nov 5 Competition Expiry Timestamps & "Valid until" text across all 5 HTML pages
+        if (entry.expiry) {
+            const timerSpan = col.querySelector('[data-expiry]');
+            if (timerSpan) timerSpan.setAttribute('data-expiry', entry.expiry);
+        }
+        if (entry.validText) {
+            const validSmall = col.querySelector('small.text-muted');
+            if (validSmall) validSmall.innerText = entry.validText;
+        }
+
+        if (isHomePage && !col.hasAttribute('data-season-cat')) {
+            const isOneOfEightHot = EIGHT_HOT_DEAL_TITLES.some(
+                t => t.toLowerCase() === entry.exactTitle.toLowerCase()
+            );
+            col.setAttribute('data-hot', isOneOfEightHot ? 'true' : 'false');
+        }
+
+        const seasonMatch = getSeasonBadgeForProduct(entry.exactTitle);
+        if (seasonMatch) {
+            injectSeasonBadgeIntoCardBody(col, seasonMatch.badgeText);
+        }
 
         const titleEl = col.querySelector('h6');
         if (titleEl) titleEl.innerText = entry.exactTitle;
@@ -674,35 +2157,7 @@ function syncAllCardsWithRealStores() {
     });
 }
 
-// 0. Light Mode / Dark Mode Theme Switcher
-function setupThemeToggle() {
-    const savedTheme = localStorage.getItem('dealScoutTheme') || 'light';
-    document.documentElement.setAttribute('data-bs-theme', savedTheme);
-    updateThemeButtonUI(savedTheme);
-
-    const toggleBtn = document.getElementById('themeToggleBtn');
-    if (toggleBtn) {
-        toggleBtn.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-bs-theme', newTheme);
-            localStorage.setItem('dealScoutTheme', newTheme);
-            updateThemeButtonUI(newTheme);
-        });
-    }
-}
-
-function updateThemeButtonUI(theme) {
-    const toggleBtn = document.getElementById('themeToggleBtn');
-    if (!toggleBtn) return;
-    if (theme === 'dark') {
-        toggleBtn.innerHTML = `<i class="bi bi-sun-fill text-warning me-1"></i><span class="d-none d-sm-inline">Light</span>`;
-    } else {
-        toggleBtn.innerHTML = `<i class="bi bi-moon-stars-fill me-1"></i><span class="d-none d-sm-inline">Dark</span>`;
-    }
-}
-
-// 1. Real-Time Promotion Countdown Timer, Urgent Alert & Monochrome Expired State on Card
+// Countdown Timers
 function updateCountdowns() {
     const timers = document.querySelectorAll('[data-expiry]');
     const now = new Date().getTime();
@@ -750,9 +2205,11 @@ function updateCountdowns() {
         const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const secs = Math.floor((diff % (1000 * 60)) / 1000);
 
-        if (days === 0) {
+        // Products expiring on Nov 5 at 11:00 PM show as Ending Soon (< 24 Hours)
+        if (days === 0 || timer.getAttribute('data-expiry') === '2026-11-05T23:00:00') {
+            const totalHoursLeft = Math.floor(diff / (1000 * 60 * 60));
             timer.classList.add('ending-soon');
-            timer.innerHTML = `🔥 Ending Soon • ${hours}h : ${mins}m : ${secs}s`;
+            timer.innerHTML = `Ending Soon • ${totalHoursLeft}h : ${mins}m : ${secs}s`;
         } else {
             timer.classList.remove('ending-soon');
             timer.innerHTML = `<i class="bi bi-clock-history me-1 text-warning"></i>${days}d : ${hours}h : ${mins}m : ${secs}s`;
@@ -761,14 +2218,13 @@ function updateCountdowns() {
 }
 
 // ==========================================================================
-// 2. SINGLE TOP SEARCH BOX WITH POPULAR TAGS + LOWER DUAL DROPDOWNS (METHOD A)
+// 9. SEARCH, FILTER & 8-HOT-DEALS CUSTOMER CATEGORY PRIORITY
 // ==========================================================================
 function setupFiltersAndSorting() {
-    const filterButtons = document.querySelectorAll('.filter-btn');
+    const filterButtons = document.querySelectorAll('#dealsSection .filter-btn, .filter-bar-box .filter-btn');
     const dealsContainer = document.getElementById('dealsContainer');
     const categoryShowcase = document.getElementById('categoryShowcaseSection');
     const dealsSectionTitle = document.getElementById('dealsSectionTitle');
-    const dealsSectionSubtitle = document.getElementById('dealsSectionSubtitle');
 
     if (!dealsContainer) return;
 
@@ -779,7 +2235,6 @@ function setupFiltersAndSorting() {
         col.setAttribute('data-original-index', index);
     });
 
-    // A. Upgrade Top Hero Search Area on ALL pages (Remove top dropdown, keep only sleek Search Box + Popular tags)
     const heroRightCol = document.querySelector('.hero-banner .col-lg-5');
     if (heroRightCol) {
         const finderHeading = isHomePage
@@ -797,7 +2252,7 @@ function setupFiltersAndSorting() {
                     </button>
                 </div>
                 <div class="popular-tags-row">
-                    <span class="popular-label"><i class="bi bi-fire text-danger me-1"></i>Popular:</span>
+                    <span class="popular-label">Popular:</span>
                     <button type="button" class="popular-tag-btn" data-tag="shoe">shoe</button>
                     <button type="button" class="popular-tag-btn" data-tag="Lipstick">Lipstick</button>
                     <button type="button" class="popular-tag-btn" data-tag="camera">camera</button>
@@ -806,7 +2261,11 @@ function setupFiltersAndSorting() {
         `;
     }
 
-    // B. Create Lower Controls Bar (Left: Result Counter Badge | Right: Method A Days Left Dropdown + Sort By Dropdown)
+    const prefBannerDiv = document.createElement('div');
+    prefBannerDiv.id = 'customerPrefBanner';
+    prefBannerDiv.className = 'personalized-pref-bar d-none d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3';
+    dealsContainer.parentNode.insertBefore(prefBannerDiv, dealsContainer);
+
     const counterDiv = document.createElement('div');
     counterDiv.className = 'deals-ResultAndControls-bar';
     counterDiv.innerHTML = `
@@ -815,18 +2274,16 @@ function setupFiltersAndSorting() {
         </span>
         <div class="deal-dropdowns-group">
             <div class="control-select-wrapper">
-                <i class="bi bi-clock-history control-select-icon text-warning"></i>
                 <select id="daysFilterSelect" class="form-select form-select-sm deal-control-select" aria-label="Filter by validity period">
                     <option value="all">All Validity Periods</option>
-                    <option value="1"> Ending Today (&lt; 24 Hours)</option>
-                    <option value="3"> Up to 3 Days Left</option>
-                    <option value="5"> Up to 5 Days Left</option>
-                    <option value="7"> Up to 7 Days Left</option>
-                    <option value="expired"> Expired Deals Only</option>
+                    <option value="1">Ending Today (&lt; 24 Hours)</option>
+                    <option value="3">Up to 3 Days Left</option>
+                    <option value="5">Up to 5 Days Left</option>
+                    <option value="7">Up to 7 Days Left</option>
+                    <option value="expired">Expired Deals Only</option>
                 </select>
             </div>
             <div class="control-select-wrapper">
-                <i class="bi bi-arrow-down-up control-select-icon text-primary"></i>
                 <select id="sortSelect" class="form-select form-select-sm deal-control-select" aria-label="Sort deals">
                     <option value="default">Sort By: Featured Deals</option>
                     <option value="discount-desc">Highest Discount (%)</option>
@@ -871,63 +2328,98 @@ function setupFiltersAndSorting() {
         });
     }
 
-    function filterAndSortCards() {
+    function filterAndSortCards(triggeredBySearchInput = false) {
         syncPopularTagUI();
 
-        const activeFilterBtn = document.querySelector('.filter-btn.active');
-        const selectedCategory = activeFilterBtn ? activeFilterBtn.getAttribute('data-filter') : 'all';
-        const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
-        const selectedDays = daysFilterSelect ? daysFilterSelect.value : 'all';
-        const sortBy = sortSelect ? sortSelect.value : 'default';
+        const prefCats = getCustomerPreferredCategories();
 
+        if (isHomePage && prefCats.length > 0) {
+            prefBannerDiv.classList.remove('d-none');
+            const prettyNames = prefCats.map(c => c === 'home' ? 'Home & Living' : c.charAt(0).toUpperCase() + c.slice(1)).join(', ');
+            prefBannerDiv.innerHTML = `
+                <div class="small fw-semibold">
+                    Personalized Feed: Prioritizing <strong>${prettyNames}</strong> first in Hot Flash Deals & Seasonal Discounts!
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 small fw-semibold" id="changePrefCatsBtn">
+                    <i class="bi bi-sliders me-1"></i>Change Interests
+                </button>
+            `;
+            document.getElementById('changePrefCatsBtn')?.addEventListener('click', openCategoryPreferenceModalAgain);
+        } else {
+            prefBannerDiv.classList.add('d-none');
+        }
+
+        const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
         const escapedQuery = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const searchRegex = new RegExp('\\b' + escapedQuery, 'i');
+
+        if (isHomePage && triggeredBySearchInput) {
+            if (searchQuery !== '') {
+                const matchedCol = cols.find(col => {
+                    const t = (col.getAttribute('data-title') || '').toLowerCase();
+                    const pk = (col.getAttribute('data-product-keywords') || '').toLowerCase();
+                    return searchRegex.test(t) || searchRegex.test(pk);
+                });
+                if (matchedCol) {
+                    const matchedCat = (matchedCol.getAttribute('data-main-cat') || matchedCol.getAttribute('data-subcat') || 'all').toLowerCase();
+                    const targetBtn = document.querySelector(`#dealsSection .filter-btn[data-filter="${matchedCat}"]`);
+                    if (targetBtn) {
+                        filterButtons.forEach(b => b.classList.remove('active'));
+                        targetBtn.classList.add('active');
+                    }
+                }
+            } else {
+                const allBtn = document.querySelector('#dealsSection .filter-btn[data-filter="all"]');
+                if (allBtn) {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    allBtn.classList.add('active');
+                }
+            }
+        }
+
+        const activeFilterBtn = document.querySelector('#dealsSection .filter-btn.active, .filter-bar-box .filter-btn.active');
+        const selectedCategory = activeFilterBtn ? activeFilterBtn.getAttribute('data-filter') : 'all';
+        const selectedDays = daysFilterSelect ? daysFilterSelect.value : 'all';
+        const sortBy = sortSelect ? sortSelect.value : 'default';
         const now = new Date().getTime();
 
         if (isHomePage && categoryShowcase) {
             if (searchQuery !== '') {
                 categoryShowcase.classList.add('d-none');
-                if (dealsSectionTitle) dealsSectionTitle.innerText = 'Product Search Results';
-                if (dealsSectionSubtitle) dealsSectionSubtitle.innerText = `Showing matching products for "${searchInput.value}" across all 32 deals`;
             } else {
                 categoryShowcase.classList.remove('d-none');
-                if (dealsSectionTitle) {
-                    dealsSectionTitle.innerText = (selectedCategory === 'all' && selectedDays === 'all')
-                        ? 'Hot Flash Deals Across Stores'
-                        : 'Filtered Store Deals';
-                }
-                if (dealsSectionSubtitle) {
-                    dealsSectionSubtitle.innerText = 'Click any item image or "Preview" to view product info and exact Google Maps store location';
-                }
+            }
+            if (dealsSectionTitle) {
+                dealsSectionTitle.innerText = 'Hot Flash Deals Across Stores';
             }
         }
 
         cols.forEach(col => {
             const subcat = (col.getAttribute('data-subcat') || '').toLowerCase();
+            const mainCat = (col.getAttribute('data-main-cat') || subcat).toLowerCase();
             const title = (col.getAttribute('data-title') || '').toLowerCase();
             const productKeywords = (col.getAttribute('data-product-keywords') || '').toLowerCase();
             const isHot = col.getAttribute('data-hot') === 'true';
 
             const expiryEl = col.querySelector('[data-expiry]');
-            const expiryTime = expiryEl ? new Date(expiryEl.getAttribute('data-expiry')).getTime() : now;
+            const expiryAttr = expiryEl ? expiryEl.getAttribute('data-expiry') : '';
+            const expiryTime = expiryAttr ? new Date(expiryAttr).getTime() : now;
             const diff = expiryTime - now;
             const daysLeftFloat = diff / (1000 * 60 * 60 * 24);
 
-            // 1. Category Match
-            const matchesCategory = (selectedCategory === 'all' || subcat === selectedCategory);
-
-            // 2. Strict Product-Only Search Match
+            const matchesCategory = (selectedCategory === 'all' || subcat === selectedCategory || mainCat === selectedCategory);
             const matchesSearch = !searchQuery ||
                                   searchRegex.test(title) ||
                                   searchRegex.test(productKeywords);
 
-            // 3. Method A: Validity Period (Days Left) Match
             let matchesDays = true;
             if (selectedDays === 'expired') {
                 matchesDays = diff <= 0;
+            } else if (selectedDays === '1') {
+                matchesDays = diff > 0 && (daysLeftFloat <= 1 || expiryAttr === '2026-11-05T23:00:00');
             } else if (selectedDays !== 'all') {
                 const maxDays = parseFloat(selectedDays);
-                matchesDays = diff > 0 && daysLeftFloat <= maxDays;
+                matchesDays = diff > 0 && daysLeftFloat <= maxDays + 0.5;
             }
 
             if (isHomePage && !searchQuery && selectedCategory === 'all' && selectedDays === 'all') {
@@ -953,10 +2445,23 @@ function setupFiltersAndSorting() {
             if (sortBy === 'price-asc') return priceA - priceB;
             if (sortBy === 'price-desc') return priceB - priceA;
             if (sortBy === 'ending-soon') return expiryA - expiryB;
+
+            if (prefCats.length > 0) {
+                const catA = (a.getAttribute('data-main-cat') || a.getAttribute('data-subcat') || '').toLowerCase();
+                const catB = (b.getAttribute('data-main-cat') || b.getAttribute('data-subcat') || '').toLowerCase();
+                const prefRankA = prefCats.indexOf(catA);
+                const prefRankB = prefCats.indexOf(catB);
+                const isPrefA = prefRankA !== -1;
+                const isPrefB = prefRankB !== -1;
+
+                if (isPrefA && !isPrefB) return -1;
+                if (!isPrefA && isPrefB) return 1;
+                if (isPrefA && isPrefB && prefRankA !== prefRankB) return prefRankA - prefRankB;
+            }
+
             return indexA - indexB;
         });
 
-        // Staggered Fade-Up Reveal Animation
         visibleCols.forEach((col, idx) => {
             col.classList.remove('card-reveal-anim');
             void col.offsetWidth;
@@ -968,7 +2473,7 @@ function setupFiltersAndSorting() {
         const counterBadge = document.getElementById('liveResultCounter');
         if (counterBadge) {
             if (isHomePage && !searchQuery && selectedCategory === 'all' && selectedDays === 'all') {
-                counterBadge.innerText = `Showing 4 Featured Hot Deals • Type a product name above to search all ${cols.length} deals`;
+                counterBadge.innerText = `Showing 8 Featured Hot Deals • Type a product name above to search all ${cols.length} deals`;
             } else {
                 counterBadge.innerText = `Showing ${visibleCols.length} of ${cols.length} matching deals`;
             }
@@ -981,20 +2486,19 @@ function setupFiltersAndSorting() {
         }
     }
 
-    // Popular Tag Button Clicks (shoe, Lipstick, camera)
+    window.triggerDealScoutFilterUpdate = () => filterAndSortCards(false);
+
     popularTagBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             if (!searchInput) return;
             const clickedTag = btn.getAttribute('data-tag') || '';
 
-            // Toggle off if already active
             if (searchInput.value.trim().toLowerCase() === clickedTag.toLowerCase()) {
                 searchInput.value = '';
-                filterAndSortCards();
+                filterAndSortCards(true);
                 return;
             }
 
-            // If on a category page that doesn't contain this product, jump to Home Page global search
             const testRegex = new RegExp('\\b' + clickedTag, 'i');
             const hasMatchOnCurrentPage = cols.some(col => {
                 const t = (col.getAttribute('data-title') || '').toLowerCase();
@@ -1008,7 +2512,7 @@ function setupFiltersAndSorting() {
             }
 
             searchInput.value = clickedTag;
-            filterAndSortCards();
+            filterAndSortCards(true);
         });
     });
 
@@ -1016,7 +2520,7 @@ function setupFiltersAndSorting() {
         clearSearchBtn.addEventListener('click', () => {
             searchInput.value = '';
             searchInput.focus();
-            filterAndSortCards();
+            filterAndSortCards(true);
         });
     }
 
@@ -1029,7 +2533,7 @@ function setupFiltersAndSorting() {
             if (searchInput) searchInput.value = '';
             if (daysFilterSelect) daysFilterSelect.value = 'all';
             if (sortSelect) sortSelect.value = 'default';
-            filterAndSortCards();
+            filterAndSortCards(false);
         });
     }
 
@@ -1037,25 +2541,27 @@ function setupFiltersAndSorting() {
         btn.addEventListener('click', () => {
             filterButtons.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            filterAndSortCards();
+            filterAndSortCards(false);
         });
     });
 
-    if (searchInput) searchInput.addEventListener('input', filterAndSortCards);
-    if (daysFilterSelect) daysFilterSelect.addEventListener('change', filterAndSortCards);
-    if (sortSelect) sortSelect.addEventListener('change', filterAndSortCards);
+    if (searchInput) searchInput.addEventListener('input', () => filterAndSortCards(true));
+    if (daysFilterSelect) daysFilterSelect.addEventListener('change', () => filterAndSortCards(false));
+    if (sortSelect) sortSelect.addEventListener('change', () => filterAndSortCards(false));
 
-    // Check if redirected from another page with ?q=tag
     const urlParams = new URLSearchParams(window.location.search);
     const initialQuery = urlParams.get('q');
     if (initialQuery && searchInput) {
         searchInput.value = initialQuery;
+        filterAndSortCards(true);
+    } else {
+        filterAndSortCards(false);
     }
-
-    filterAndSortCards();
 }
 
-// 3. Smart Savings Tracker & Duplicate Prevention
+// ==========================================================================
+// 10. SMART SAVINGS TRACKER
+// ==========================================================================
 function syncSaveButtons() {
     const buttons = document.querySelectorAll('.save-deal-btn');
     buttons.forEach(btn => {
@@ -1154,6 +2660,7 @@ function addSavedDeal(title, store, originalPrice, finalPrice) {
 
     savedDeals.push({ title, store, originalPrice, finalPrice });
     localStorage.setItem('dealScoutSaved', JSON.stringify(savedDeals));
+    incrementCustomerSaveCount();
     renderSavedDeals();
     showToastNotification(`Added to Savings Tracker! (${title})`, 'success');
 }
@@ -1173,7 +2680,6 @@ function clearAllSavedDeals() {
     showToastNotification('Cleared all saved deals!', 'danger');
 }
 
-// 4. Interactive Toast Notification
 function showToastNotification(message, type = 'success') {
     let toastContainer = document.getElementById('dealScoutToastContainer');
     if (!toastContainer) {
@@ -1203,7 +2709,7 @@ function showToastNotification(message, type = 'success') {
 }
 
 // ==========================================================================
-// 5. PRODUCT PREVIEW MODAL (SPRING ANIMATION + BLURRED BACKDROP + DIRECT MAP LINKS)
+// 11. PRODUCT PREVIEW MODAL (INCLUDES SEASONAL OFFER BADGE IN PREVIEW)
 // ==========================================================================
 function buildProductPreviewModal() {
     if (document.getElementById('productPreviewModal')) return;
@@ -1222,7 +2728,6 @@ function buildProductPreviewModal() {
                 </div>
                 <div class="modal-body">
                     <div class="row g-3 align-items-start">
-                        <!-- Left Column: Main Image + Compact Promotion Details -->
                         <div class="col-lg-5">
                             <div class="preview-main-img-box">
                                 <img id="previewMainImg" src="" alt="Product Preview">
@@ -1238,19 +2743,19 @@ function buildProductPreviewModal() {
                             </div>
                         </div>
 
-                        <!-- Right Column: Title, Price, Selective Color, Spec Info & Larger Google Map -->
                         <div class="col-lg-7 d-flex flex-column">
                             <h5 class="fw-bold mb-1" id="previewTitle">Product Title</h5>
                             <p class="text-muted small mb-2" id="previewStoreSub">Official Store Promotion</p>
 
-                            <!-- Price Block -->
+                            <!-- Blue Seasonal Discount Badge inside Preview Modal -->
+                            <div id="previewSeasonBadgeWrap" class="d-none"></div>
+
                             <div class="d-flex align-items-baseline flex-wrap gap-2 mb-2 pb-2 border-bottom">
                                 <span class="fs-4 fw-bolder text-danger" id="previewPriceNew">0 MMK</span>
                                 <span class="price-old small" id="previewPriceOld">0 MMK</span>
                                 <span class="savings-pill ms-auto" id="previewSavingsPill">Save 0 MMK</span>
                             </div>
 
-                            <!-- Selective Color Swatches -->
                             <div class="mb-2" id="previewColorBlock">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="small fw-bold">
@@ -1260,7 +2765,6 @@ function buildProductPreviewModal() {
                                 </div>
                             </div>
 
-                            <!-- Informational Size / Specification Row -->
                             <div class="mb-2" id="previewSizeBlock">
                                 <div class="p-2 rounded-3 border bg-body-tertiary d-flex flex-wrap align-items-center justify-content-between gap-2">
                                     <span class="small fw-bold text-muted"><i class="bi bi-layers me-1 text-primary"></i>Available Sizes / Spec:</span>
@@ -1268,14 +2772,12 @@ function buildProductPreviewModal() {
                                 </div>
                             </div>
 
-                            <!-- Action Button -->
                             <div class="d-grid my-2">
                                 <button type="button" class="btn btn-accent fw-bold py-2" id="previewSaveBtn">
                                     <i class="bi bi-bookmark-plus me-2"></i>Save Deal to Tracker
                                 </button>
                             </div>
 
-                            <!-- Store Availability & Expanded Yangon Google Map Embed -->
                             <div class="store-availability-box mt-1" id="previewMapSection">
                                 <div class="d-flex justify-content-between align-items-center gap-2">
                                     <div>
@@ -1304,23 +2806,27 @@ function attachPreviewButtonsToCards() {
 
     const cols = document.querySelectorAll('.deal-col');
     cols.forEach(col => {
+        if (col.getAttribute('data-preview-bound') === 'true') return;
+        col.setAttribute('data-preview-bound', 'true');
+
         const card = col.querySelector('.deal-card');
         const imgWrapper = col.querySelector('.deal-img-wrapper');
         const locationEl = col.querySelector('.store-location');
 
         if (!card || !imgWrapper) return;
 
-        if (!imgWrapper.querySelector('.btn-quick-preview-overlay')) {
-            const overlayBtn = document.createElement('button');
+        let overlayBtn = imgWrapper.querySelector('.btn-quick-preview-overlay');
+        if (!overlayBtn) {
+            overlayBtn = document.createElement('button');
             overlayBtn.type = 'button';
             overlayBtn.className = 'btn-quick-preview-overlay';
             overlayBtn.innerHTML = `<i class="bi bi-eye me-1"></i>Preview`;
-            overlayBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                openProductPreview(col, false);
-            });
             imgWrapper.appendChild(overlayBtn);
         }
+        overlayBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openProductPreview(col, false);
+        });
 
         imgWrapper.addEventListener('click', () => openProductPreview(col, false));
 
@@ -1373,7 +2879,6 @@ function openProductPreview(col, scrollToMap = false) {
 
     const savedAmount = Math.max(0, originalPrice - finalPrice);
 
-    // Populate Basic Info
     document.getElementById('previewTitle').innerText = title;
     document.getElementById('previewStoreTag').innerHTML = `<i class="bi bi-shop me-1"></i>${store}`;
     document.getElementById('previewSubcatBadge').innerText = subcat.toUpperCase();
@@ -1383,11 +2888,23 @@ function openProductPreview(col, scrollToMap = false) {
     document.getElementById('previewTimerBadge').innerHTML = timerText;
     document.getElementById('previewDescription').innerText = catalogEntry ? catalogEntry.description : 'Verified physical outlet promotion in Yangon.';
 
+    // Show Seasonal Discount Badge inside Preview Modal if product belongs to a Seasonal Discount
+    const previewSeasonWrap = document.getElementById('previewSeasonBadgeWrap');
+    const seasonMatch = getSeasonBadgeForProduct(title);
+    if (previewSeasonWrap) {
+        if (seasonMatch) {
+            previewSeasonWrap.classList.remove('d-none');
+            previewSeasonWrap.innerHTML = `<span class="badge-season-tag"><i class="bi bi-stars"></i>${seasonMatch.badgeText}</span>`;
+        } else {
+            previewSeasonWrap.classList.add('d-none');
+            previewSeasonWrap.innerHTML = '';
+        }
+    }
+
     document.getElementById('previewPriceNew').innerText = `${finalPrice.toLocaleString()} MMK`;
     document.getElementById('previewPriceOld').innerText = `${originalPrice.toLocaleString()} MMK`;
     document.getElementById('previewSavingsPill').innerText = `Save ${savedAmount.toLocaleString()} MMK`;
 
-    // Single Main Image Setup
     const mainImg = document.getElementById('previewMainImg');
     mainImg.src = defaultImgSrc;
     mainImg.style.filter = 'none';
@@ -1398,7 +2915,6 @@ function openProductPreview(col, scrollToMap = false) {
         mainImg.classList.remove('img-contain-mode');
     }
 
-    // Selective Color Swatches
     const colorBlockEl = document.getElementById('previewColorBlock');
     const selectedColorNameEl = document.getElementById('selectedColorName');
     const colorListEl = document.getElementById('previewColorList');
@@ -1430,7 +2946,6 @@ function openProductPreview(col, scrollToMap = false) {
         colorBlockEl.classList.add('d-none');
     }
 
-    // Informational Size / Spec Display
     const sizeBlockEl = document.getElementById('previewSizeBlock');
     const sizeInfoTextEl = document.getElementById('previewSizeInfoText');
     if (catalogEntry && catalogEntry.sizeInfo) {
@@ -1440,7 +2955,6 @@ function openProductPreview(col, scrollToMap = false) {
         sizeBlockEl.classList.add('d-none');
     }
 
-    // Modal Save Button
     const modalSaveBtn = document.getElementById('previewSaveBtn');
     const alreadySaved = savedDeals.some(item => item.title === saveTitle);
 
@@ -1464,7 +2978,6 @@ function openProductPreview(col, scrollToMap = false) {
         };
     }
 
-    // Store Availability, Exact Map Embed & Direct Short Link (maps.app.goo.gl)
     document.getElementById('previewFullAddress').innerText = fullLocationDisplay;
     const encodedMapQuery = encodeURIComponent(mapQueryStr);
     document.getElementById('previewGoogleMapFrame').src = `https://maps.google.com/maps?q=${encodedMapQuery}&t=&z=17&ie=UTF8&iwloc=&output=embed`;
@@ -1481,12 +2994,192 @@ function openProductPreview(col, scrollToMap = false) {
     }
 }
 
+// ==========================================================================
+// 12. DYNAMIC CROSS-NAVIGATION MEGA FOOTER & DEEP-LINK SUBCATEGORY ROUTER
+// ==========================================================================
+function setupCrossNavFooterAndDeepLinks() {
+    const footerEl = document.querySelector('footer');
+    if (footerEl) {
+        footerEl.className = 'dealscout-mega-footer pt-5 pb-4 mt-5';
+        footerEl.innerHTML = `
+            <div class="container">
+                <div class="row g-4 justify-content-between">
+                    <div class="col-lg-3 col-md-12 mb-2 mb-lg-0">
+                        <a class="navbar-brand fs-3 d-inline-block mb-2 text-white text-decoration-none fw-bolder" href="index.html">
+                            <i class="bi bi-tag-fill me-2 text-warning"></i>Deal<span style="color:#FF5A1F;">Scout</span>
+                        </a>
+                        <p class="footer-brand-desc mb-3">
+                            Compare verified Yangon physical store discounts, track real-time promotion timers, and locate exact outlets on Google Maps.
+                        </p>
+                        <div class="small fw-bold text-uppercase text-white-50 mb-2" style="font-size:0.74rem; letter-spacing:0.6px;">
+                            Follow DealScout
+                        </div>
+                        <div class="footer-social-list">
+                            <a href="https://www.facebook.com" target="_blank" rel="noopener" class="footer-social-btn" title="Facebook">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                            <a href="https://www.instagram.com" target="_blank" rel="noopener" class="footer-social-btn" title="Instagram">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                            <a href="https://www.tiktok.com" target="_blank" rel="noopener" class="footer-social-btn" title="TikTok">
+                                <i class="bi bi-tiktok"></i>
+                            </a>
+                            <a href="https://x.com" target="_blank" rel="noopener" class="footer-social-btn" title="X (Twitter)">
+                                <i class="bi bi-twitter-x"></i>
+                            </a>
+                            <a href="https://www.youtube.com" target="_blank" rel="noopener" class="footer-social-btn" title="YouTube">
+                                <i class="bi bi-youtube"></i>
+                            </a>
+                            <a href="https://telegram.org" target="_blank" rel="noopener" class="footer-social-btn" title="Telegram">
+                                <i class="bi bi-telegram"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-9 col-md-12">
+                        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 g-3">
+                            <div class="col">
+                                <a href="fashion.html" class="footer-main-nav-btn">
+                                    <span>Fashion</span>
+                                    <i class="bi bi-arrow-up-right small"></i>
+                                </a>
+                                <ul class="footer-subnav-list">
+                                    <li><a href="fashion.html?subcat=clothing" class="footer-subnav-link" data-page="fashion.html" data-subcat="clothing">Clothing</a></li>
+                                    <li><a href="fashion.html?subcat=shoes" class="footer-subnav-link" data-page="fashion.html" data-subcat="shoes">Shoes</a></li>
+                                    <li><a href="fashion.html?subcat=bags" class="footer-subnav-link" data-page="fashion.html" data-subcat="bags">Bags</a></li>
+                                    <li><a href="fashion.html?subcat=jewelry" class="footer-subnav-link" data-page="fashion.html" data-subcat="jewelry">Jewelry</a></li>
+                                    <li><a href="fashion.html?subcat=sunglasses" class="footer-subnav-link" data-page="fashion.html" data-subcat="sunglasses">Sunglasses</a></li>
+                                </ul>
+                            </div>
+
+                            <div class="col">
+                                <a href="electronics.html" class="footer-main-nav-btn">
+                                    <span>Electronics</span>
+                                    <i class="bi bi-arrow-up-right small"></i>
+                                </a>
+                                <ul class="footer-subnav-list">
+                                    <li><a href="electronics.html?subcat=phones" class="footer-subnav-link" data-page="electronics.html" data-subcat="phones">Phones</a></li>
+                                    <li><a href="electronics.html?subcat=laptops" class="footer-subnav-link" data-page="electronics.html" data-subcat="laptops">Laptops</a></li>
+                                    <li><a href="electronics.html?subcat=tablets" class="footer-subnav-link" data-page="electronics.html" data-subcat="tablets">Tablets</a></li>
+                                    <li><a href="electronics.html?subcat=headphones" class="footer-subnav-link" data-page="electronics.html" data-subcat="headphones">Headphones</a></li>
+                                    <li><a href="electronics.html?subcat=cameras" class="footer-subnav-link" data-page="electronics.html" data-subcat="cameras">Cameras</a></li>
+                                </ul>
+                            </div>
+
+                            <div class="col">
+                                <a href="beauty.html" class="footer-main-nav-btn">
+                                    <span>Beauty</span>
+                                    <i class="bi bi-arrow-up-right small"></i>
+                                </a>
+                                <ul class="footer-subnav-list">
+                                    <li><a href="beauty.html?subcat=cosmetics" class="footer-subnav-link" data-page="beauty.html" data-subcat="cosmetics">Cosmetics</a></li>
+                                    <li><a href="beauty.html?subcat=skincare" class="footer-subnav-link" data-page="beauty.html" data-subcat="skincare">Skincare</a></li>
+                                    <li><a href="beauty.html?subcat=perfumes" class="footer-subnav-link" data-page="beauty.html" data-subcat="perfumes">Perfumes</a></li>
+                                    <li><a href="beauty.html?subcat=hair" class="footer-subnav-link" data-page="beauty.html" data-subcat="hair">Hair & Styling</a></li>
+                                    <li><a href="beauty.html?subcat=nails" class="footer-subnav-link" data-page="beauty.html" data-subcat="nails">Nail Salons</a></li>
+                                </ul>
+                            </div>
+
+                            <div class="col">
+                                <a href="home-living.html" class="footer-main-nav-btn">
+                                    <span>Home & Living</span>
+                                    <i class="bi bi-arrow-up-right small"></i>
+                                </a>
+                                <ul class="footer-subnav-list">
+                                    <li><a href="home-living.html?subcat=furniture" class="footer-subnav-link" data-page="home-living.html" data-subcat="furniture">Furniture</a></li>
+                                    <li><a href="home-living.html?subcat=decor" class="footer-subnav-link" data-page="home-living.html" data-subcat="decor">Decor</a></li>
+                                    <li><a href="home-living.html?subcat=bedding" class="footer-subnav-link" data-page="home-living.html" data-subcat="bedding">Bedding</a></li>
+                                    <li><a href="home-living.html?subcat=kitchenware" class="footer-subnav-link" data-page="home-living.html" data-subcat="kitchenware">Kitchenware</a></li>
+                                    <li><a href="home-living.html?subcat=cleaning" class="footer-subnav-link" data-page="home-living.html" data-subcat="cleaning">Cleaning</a></li>
+                                </ul>
+                            </div>
+
+                            <div class="col">
+                                <a href="index.html?season=thadingyut" class="footer-main-nav-btn footer-season-main-link" data-season="thadingyut">
+                                    <span>Seasonal</span>
+                                    <i class="bi bi-arrow-up-right small"></i>
+                                </a>
+                                <ul class="footer-subnav-list">
+                                    <li><a href="index.html?season=thadingyut" class="footer-subnav-link footer-season-sub-link" data-season="thadingyut">Thadingyut</a></li>
+                                    <li><a href="index.html?season=christmas" class="footer-subnav-link footer-season-sub-link" data-season="christmas">Christmas</a></li>
+                                    <li><a href="index.html?season=newyear" class="footer-subnav-link footer-season-sub-link" data-season="newyear">New Year</a></li>
+                                    <li><a href="index.html?season=monsoon" class="footer-subnav-link footer-season-sub-link" data-season="monsoon">MonSoon Season</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-bottom-bar d-flex flex-wrap justify-content-between align-items-center gap-2 text-secondary small">
+                    <div>© 2026 <strong>DealScout</strong> • All 32 Verified Yangon Store Promotions</div>
+                    <div>Developed by Group 1 • GUSTO College Web Design Competition 2026</div>
+                </div>
+            </div>
+        `;
+
+        footerEl.querySelectorAll('.footer-subnav-link[data-subcat]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const targetPage = link.getAttribute('data-page');
+                const subcatKey = link.getAttribute('data-subcat');
+                const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+
+                if (currentPath.toLowerCase() === targetPage.toLowerCase()) {
+                    e.preventDefault();
+                    closeCustomPageViews();
+                    const filterBtn = document.querySelector(`.filter-btn[data-filter="${subcatKey}"]`);
+                    if (filterBtn) {
+                        filterBtn.click();
+                        document.querySelector('.filter-bar-box, #dealsContainer')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            });
+        });
+
+        footerEl.querySelectorAll('.footer-season-main-link, .footer-season-sub-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const seasonKey = link.getAttribute('data-season');
+                if (document.getElementById('seasonalDiscountSection')) {
+                    e.preventDefault();
+                    closeCustomPageViews();
+                    activateSeasonalTab(seasonKey, true);
+                }
+            });
+        });
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetSubcat = urlParams.get('subcat');
+    const targetSeason = urlParams.get('season');
+
+    if (targetSubcat) {
+        setTimeout(() => {
+            closeCustomPageViews();
+            const filterBtn = document.querySelector(`.filter-btn[data-filter="${targetSubcat.toLowerCase()}"]`);
+            if (filterBtn) {
+                filterBtn.click();
+                document.querySelector('.filter-bar-box, #dealsContainer')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 180);
+    }
+
+    if (targetSeason && document.getElementById('seasonalDiscountSection')) {
+        setTimeout(() => {
+            closeCustomPageViews();
+            activateSeasonalTab(targetSeason.toLowerCase(), true);
+        }, 200);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     setupThemeToggle();
     syncAllCardsWithRealStores();
+    setupFiltersAndSorting();
+    setupHomeHeroSliderAndSeasonalSection();
+    setupForcedAuthGate();
+    updateNavbarAuthAndLinks();
     attachPreviewButtonsToCards();
+    setupCrossNavFooterAndDeepLinks();
     setInterval(updateCountdowns, 1000);
     updateCountdowns();
-    setupFiltersAndSorting();
     renderSavedDeals();
 });
